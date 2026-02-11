@@ -16,7 +16,14 @@
   gap: 0.5rem;
 }
 
+.itemRow {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
 .itemButton {
+  flex: 1;
   padding: 0.5rem 0.75rem;
   border-radius: 0.375rem;
   border: 1px solid transparent;
@@ -30,6 +37,27 @@
   color: #ffffff;
 }
 
+.deleteButton {
+  width: 2rem;
+  height: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  border: none;
+  background-color: transparent;
+  cursor: pointer;
+}
+
+.deleteButton:hover {
+  background-color: #fee2e2;
+}
+
+.deleteButtonIcon {
+  width: 0.875rem;
+  height: 0.875rem;
+}
+
 .createButton {
   margin-top: auto;
   padding: 0.5rem 0.75rem;
@@ -37,5 +65,10 @@
   border: 1px solid #d1d5db;
   background-color: #f3f4f6;
   cursor: pointer;
+}
+
+.createButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 

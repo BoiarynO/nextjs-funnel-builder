@@ -1,0 +1,83 @@
+.container {
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  background-color: #fff;
+  overflow: hidden;
+}
+
+.header {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font: inherit;
+  text-align: left;
+}
+
+.header:hover {
+  background-color: #f9fafb;
+}
+
+.title {
+  flex: 1;
+  font-weight: 500;
+}
+
+.arrow {
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
+}
+
+.arrowExpanded {
+  flex-shrink: 0;
+  transform: rotate(180deg);
+  transition: transform 0.2s ease;
+}
+
+.details {
+  padding: 1rem;
+  border-top: 1px solid #e5e7eb;
+  background-color: #fafafa;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.detailRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 0.5rem;
+  font-size: 0.875rem;
+}
+
+.detailLabel {
+  font-weight: 500;
+  color: #6b7280;
+  min-width: 10rem;
+}
+
+.pointsSection {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.pointsList {
+  margin: 0;
+  padding-left: 1.25rem;
+}
+
+.pointItem {
+  font-size: 0.875rem;
+  margin-bottom: 0.25rem;
+}
+
+.pointKey {
+  color: #6b7280;
+  margin-left: 0.25rem;
+}

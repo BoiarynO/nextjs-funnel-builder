@@ -5,7 +5,7 @@
 Create a small web app that allows managers to:
 
 * Create funnels
-* Add and reorder questions (steps)
+* Add and reorder steps (steps)
 * Store funnels locally (localStorage)
 * Export funnel data later as JSON (future iteration)
 
@@ -54,7 +54,7 @@ Layout:
 -------------------------------------
 | Sidebar | Funnel Editor           |
 |         |                         |
-| Funnels | Questions / Form        |
+| Funnels | Steps / Form        |
 -------------------------------------
 ```
 
@@ -67,7 +67,7 @@ Main area:
 
 * If no funnel selected → empty state
 * If creating funnel → creation form
-* If funnel selected → questions list
+* If funnel selected → steps list
 
 ---
 
@@ -79,19 +79,19 @@ Main area:
 type Funnel = {
   id: string
   name: string
-  questions: Question[]
+  steps: Step[]
 }
 ```
 
-### 4.2 Question Structure
+### 4.2 Step Structure
 
 ```ts
-type Question = {
+type Step = {
   id: string
   componentType: "singleSelect" | "multiselect"
   commonTitle: string
   commonSubtitle: string
-  commonAnswers: string[]
+  commonPoints: string[]
 }
 ```
 
@@ -113,7 +113,7 @@ Structure:
     {
       "id": "funnel_1",
       "name": "Registration Funnel",
-      "questions": []
+      "steps": []
     }
   ]
 }
@@ -184,17 +184,17 @@ Example structure:
     FunnelForm.tsx
     FunnelForm.module.scss
 
-  /questionForm
-    QuestionForm.tsx
-    QuestionForm.module.scss
+  /stepForm
+    StepForm.tsx
+    StepForm.module.scss
 
-  /questionsList
-    QuestionsList.tsx
-    QuestionsList.module.scss
+  /stepsList
+    StepsList.tsx
+    StepsList.module.scss
 
-  /questionItem
-    QuestionItem.tsx
-    QuestionItem.module.scss
+  /stepItem
+    StepItem.tsx
+    StepItem.module.scss
 ```
 
 Naming conventions:
@@ -237,14 +237,14 @@ onCreate
 Responsibilities:
 
 * Show funnel name
-* Show questions
-* Add question button
+* Show steps
+* Add step button
 
 Props:
 
 ```
 funnel
-onAddQuestion
+onAddStep
 onReorder
 ```
 
@@ -261,32 +261,32 @@ State:
 
 ```
 name
-questions[]
+steps[]
 ```
 
 Button "Add Step" disabled until name is filled.
 
 ---
 
-### QuestionForm
+### StepForm
 
 Responsibilities:
 
 * componentType dropdown
-* question input
-* answers input
+* step input
+* points input
 * submit button
 
 Submit:
-Push object into funnel.questions
+Push object into funnel.steps
 
 ---
 
-### QuestionsList
+### StepsList
 
 Responsibilities:
 
-* Show all questions
+* Show all steps
 * Drag and drop (future iteration)
 
 ---
@@ -299,9 +299,9 @@ Responsibilities:
 2. Click **Create Funnel**
 3. Enter name
 4. Button "Add Step" becomes active
-5. Fill question form
+5. Fill step form
 6. Click "Add"
-7. Question appears in list
+7. Step appears in list
 8. Funnel saved to localStorage
 
 ---
@@ -309,7 +309,7 @@ Responsibilities:
 ### Selecting Funnel
 
 1. Click funnel in sidebar
-2. Load questions
+2. Load steps
 3. Render editor
 
 ---
@@ -341,7 +341,7 @@ Functions:
 loadFunnels()
 saveFunnels(funnels)
 createFunnel()
-addQuestion()
+addStep()
 ```
 
 ---
@@ -356,8 +356,8 @@ addQuestion()
 /components
   SidebarFunnels
   FunnelEditor
-  QuestionForm
-  QuestionsList
+  StepForm
+  StepsList
 
 /utils
   storage.ts
@@ -375,9 +375,9 @@ Funnel:
 * Name required
 * Max 2 funnels (local constraint)
 
-Question:
+Step:
 
-* Question required
+* Step required
 * At least 1 answer
 
 ---
@@ -389,7 +389,7 @@ Planned:
 Iteration 2:
 
 * Drag and drop reorder
-* Delete question
+* Delete step
 
 Iteration 3:
 
@@ -410,7 +410,7 @@ Iteration 5:
 App allows:
 
 * Create funnel
-* Add questions
+* Add steps
 * Persist in localStorage
 * Reload page without data loss
 * Switch between funnels

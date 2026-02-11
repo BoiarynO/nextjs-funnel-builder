@@ -1,14 +1,17 @@
+import type { Funnel } from "@/types/funnel";
+import { useFunnelsStore } from "@/stores/funnelsStore";
+
+import StepsContent from "./stepsContent/StepsContent";
 import styles from "./FunnelContent.module.css";
 
-type FunnelContentProps = {
-  funnel: {
-    name: string;
-    questions: string[];
-  } | null;
-};
+const FunnelContent = () => {
+  const funnels = useFunnelsStore((s) => s.funnels);
+  const selectedFunnelId = useFunnelsStore((s) => s.selectedFunnelId);
 
-const FunnelContent = ({ funnel }: FunnelContentProps) => {
-  if (!funnel) {
+  const selectedFunnel =
+    funnels.find((f: Funnel) => f.id === selectedFunnelId) ?? null;
+
+  if (!selectedFunnel) {
     return (
       <div className={styles.container}>
         <p>No funnel selected.</p>
@@ -18,17 +21,10 @@ const FunnelContent = ({ funnel }: FunnelContentProps) => {
 
   return (
     <div className={styles.container}>
-      <h1 className={styles.title}>{funnel.name}</h1>
-      <div className={styles.questions}>
-        {funnel.questions.map((question, index) => (
-          <div key={index} className={styles.questionCard}>
-            {question}
-          </div>
-        ))}
-      </div>
+      <h1 className={styles.title}>{selectedFunnel.name}</h1>
+      <StepsContent />
     </div>
   );
 };
 
 export default FunnelContent;
-
