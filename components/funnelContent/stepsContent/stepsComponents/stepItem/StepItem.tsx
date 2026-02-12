@@ -1,12 +1,20 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
+
 import type { Step, TranslationKeyFormat } from "@/types/funnel";
 import { formatTranslationKey } from "@/utils/formatTranslationKey";
+import EditIcon from "@/assets/icons/edit.svg";
+import ReorderIcon from "@/assets/icons/reorder.svg";
+
 import styles from "./StepItem.module.css";
 
 type StepItemProps = {
   step: Step;
+  isEditMode?: boolean;
+  isEditDisabled?: boolean;
+  onEditClick?: () => void;
 };
 
 const ArrowIcon = ({ expanded }: { expanded: boolean }) => (
@@ -23,11 +31,21 @@ const ArrowIcon = ({ expanded }: { expanded: boolean }) => (
   </svg>
 );
 
-const StepItem = ({ step }: StepItemProps) => {
+const StepItem = ({
+  step,
+  isEditMode = false,
+  isEditDisabled = false,
+  onEditClick,
+}: StepItemProps) => {
   const [expanded, setExpanded] = useState(false);
 
   const handleToggle = () => {
     setExpanded((prev) => !prev);
+  };
+
+  const handleEditClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!isEditDisabled && onEditClick) onEditClick();
   };
 
   const format = (step.translationKeyFormat ?? "camelCase") as TranslationKeyFormat;
@@ -36,15 +54,37 @@ const StepItem = ({ step }: StepItemProps) => {
 
   return (
     <div className={styles.container}>
-      <button
-        type="button"
-        className={styles.header}
-        onClick={handleToggle}
-        aria-expanded={expanded}
-      >
-        <span className={styles.title}>{step.commonTitle}</span>
-        <ArrowIcon expanded={expanded} />
-      </button>
+      <div className={styles.headerRow}>
+        <button
+          type="button"
+          className={styles.header}
+          onClick={handleToggle}
+          aria-expanded={expanded}
+        >
+          <span className={styles.title}>{step.commonTitle}</span>
+          {isEditMode ? (
+            <Image
+              src={ReorderIcon}
+              alt=""
+              width={24}
+              height={24}
+              className={styles.reorderIcon}
+            />
+          ) : (
+            <ArrowIcon expanded={expanded} />
+          )}
+        </button>
+        {!isEditDisabled && onEditClick && (
+          <button
+            type="button"
+            className={styles.editIconButton}
+            onClick={handleEditClick}
+            aria-label="Edit step"
+          >
+            <Image src={EditIcon} alt="" width={20} height={20} />
+          </button>
+        )}
+      </div>
 
       {expanded && (
         <div className={styles.details}>

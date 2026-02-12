@@ -9,7 +9,19 @@ import StepItem from "@/components/funnelContent/stepsContent/stepsComponents/st
 
 import styles from "./StepsContent.module.css";
 
-const StepsContent = () => {
+type StepsContentProps = {
+  isEditMode?: boolean;
+  isFunnelEditMode?: boolean;
+  editingStepId?: string | null;
+  onEditStep?: (stepId: string | null) => void;
+};
+
+const StepsContent = ({
+  isEditMode = false,
+  isFunnelEditMode = false,
+  editingStepId = null,
+  onEditStep,
+}: StepsContentProps) => {
   const [isFormOpen, setIsFormOpen] = useState(false);
 
   const funnels = useFunnelsStore((s) => s.funnels);
@@ -24,21 +36,41 @@ const StepsContent = () => {
   }
 
   const limitReached = funnel.steps.length >= MAX_QUESTIONS_PER_FUNNEL;
+  const editingStep = editingStepId
+    ? funnel.steps.find((s) => s.id === editingStepId) ?? null
+    : null;
 
   return (
     <div className={styles.container}>
       <h2 className={styles.heading}>Steps</h2>
 
       <div className={styles.list}>
-        {funnel.steps.map((step) => (
-          <StepItem key={step.id} step={step} />
-        ))}
+        {funnel.steps.map((step) =>
+          editingStepId === step.id && editingStep ? (
+            <div key={step.id} className={styles.editFormWrap}>
+              <StepsForm
+                funnel={funnel}
+                onUpdateFunnel={updateFunnel}
+                onClose={() => onEditStep?.(null)}
+                initialStep={editingStep}
+              />
+            </div>
+          ) : (
+            <StepItem
+              key={step.id}
+              step={step}
+              isEditMode={isEditMode}
+              isEditDisabled={isFunnelEditMode}
+              onEditClick={onEditStep ? () => onEditStep(step.id) : undefined}
+            />
+          )
+        )}
         {funnel.steps.length === 0 && (
           <p className={styles.emptyText}>No steps yet.</p>
         )}
       </div>
 
-      {!isFormOpen ? (
+      {!isFormOpen && !editingStepId ? (
         <div className={styles.addRow}>
           <Button
             type="button"
@@ -52,13 +84,13 @@ const StepsContent = () => {
             <p className={styles.helperText}>Maximum steps limit reached</p>
           )}
         </div>
-      ) : (
+      ) : isFormOpen ? (
         <StepsForm
           funnel={funnel}
           onUpdateFunnel={updateFunnel}
           onClose={() => setIsFormOpen(false)}
         />
-      )}
+      ) : null}
     </div>
   );
 };

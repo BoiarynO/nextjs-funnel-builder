@@ -1,8 +1,7 @@
 import type { Funnel } from "@/types/funnel";
 import { useFunnelsStore } from "@/stores/funnelsStore";
-import ButtonDownloadFunnelJson from "@/components/ButtonDownloadFunnelJson";
 
-import StepsContent from "./stepsContent/StepsContent";
+import FunnelEditor from "./FunnelEditor";
 import styles from "./FunnelContent.module.css";
 
 const FunnelContent = () => {
@@ -22,11 +21,7 @@ const FunnelContent = () => {
 
   return (
     <div className={styles.container}>
-      <div className={styles.header}>
-        <h1 className={styles.title}>{selectedFunnel.name}</h1>
-        <ButtonDownloadFunnelJson />
-      </div>
-      <StepsContent />
+      <FunnelEditor />
     </div>
   );
 };

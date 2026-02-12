@@ -16,6 +16,10 @@
   gap: 0.75rem;
 }
 
+.editFormWrap {
+  width: 100%;
+}
+
 .stepCard {
   padding: 0.75rem 1rem;
   border-radius: 0.5rem;

@@ -1,0 +1,46 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  padding: 0.5rem;
+  background-color: #fff;
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  border-radius: 0.375rem;
+  border: 1px solid transparent;
+  cursor: grab;
+  font-size: 0.95rem;
+}
+
+.itemLabel {
+  flex: 1;
+  min-width: 0;
+}
+
+.itemIcon {
+  flex-shrink: 0;
+  pointer-events: none;
+}
+
+.item:active {
+  cursor: grabbing;
+}
+
+.itemDragging {
+  opacity: 0.6;
+  border-color: #d1d5db;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.itemDragOver {
+  border-color: #3b82f6;
+  background-color: #eff6ff;
+}
