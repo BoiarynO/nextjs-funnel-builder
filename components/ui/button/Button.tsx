@@ -5,7 +5,7 @@ import styles from "./Button.module.css";
 
 type ButtonProps = {
   children: ReactNode;
-  onClick?: () => void;
+  onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
   type?: "button" | "submit" | "reset";
   className?: string;
   style?: React.CSSProperties;

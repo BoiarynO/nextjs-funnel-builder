@@ -6,5 +6,5 @@
 
 .emptyState {
   font-size: 0.875rem;
-  color: var(--color-text-secondary);
+  color: var(--secondary-text-color);
 }
