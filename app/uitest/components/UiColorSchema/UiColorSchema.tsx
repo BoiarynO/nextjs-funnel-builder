@@ -1,3 +1,5 @@
+import Heading from "@/components/ui/heading/Heading";
+
 const colorItems = [
   { variable: "--color-primary-700", value: "#09637E", label: "primary-700" },
   { variable: "--color-primary-650", value: "#087E8E", label: "primary-650" },
@@ -19,15 +21,7 @@ export default function UiColorSchema() {
         gap: "1rem",
       }}
     >
-      <h2
-        style={{
-          fontSize: "1.25rem",
-          fontWeight: 600,
-          marginBottom: "0.25rem",
-        }}
-      >
-        Color schema
-      </h2>
+      <Heading as="h2">Color schema</Heading>
       <div
         style={{
           display: "flex",

@@ -1,9 +1,8 @@
 "use client";
 
-import { useState, useCallback } from "react";
-import Image from "next/image";
+import { useState, useCallback, type CSSProperties } from "react";
+import classNames from "classnames";
 
-import ReorderIcon from "./assets/reorder.svg";
 import styles from "./ReorderList.module.css";
 
 export type ReorderItem = {
@@ -16,9 +15,29 @@ type ReorderListProps = {
   onChangeOrder: (items: ReorderItem[]) => void;
 };
 
-const ReorderList = ({ items, onChangeOrder }: ReorderListProps) => {
+type ReorderListOwnProps = {
+  className?: string;
+  style?: CSSProperties;
+  basic?: boolean;
+  fill?: boolean;
+  outlined?: boolean;
+  filled?: boolean;
+};
+
+const ReorderList = ({
+  items,
+  onChangeOrder,
+  className = "",
+  style = {},
+  basic,
+  fill = false,
+  outlined = false,
+  filled = false,
+}: ReorderListProps & ReorderListOwnProps) => {
   const [draggedId, setDraggedId] = useState<string | null>(null);
   const [dragOverId, setDragOverId] = useState<string | null>(null);
+
+  void basic;
 
   const handleDragStart = useCallback((e: React.DragEvent, id: string) => {
     setDraggedId(id);
@@ -67,12 +86,30 @@ const ReorderList = ({ items, onChangeOrder }: ReorderListProps) => {
     [items, onChangeOrder]
   );
 
+  const containerVariantClass = filled
+    ? styles.filled
+    : outlined
+      ? styles.outlined
+      : undefined;
+
   return (
-    <div className={styles.container}>
+    <div
+      className={classNames(
+        styles.container,
+        containerVariantClass,
+        fill && styles.fill,
+        className
+      )}
+      style={style}
+    >
       {items.map((item) => (
         <div
           key={item.id}
-          className={`${styles.item} ${draggedId === item.id ? styles.itemDragging : ""} ${dragOverId === item.id ? styles.itemDragOver : ""}`}
+          className={classNames(
+            styles.item,
+            draggedId === item.id && styles.itemDragging,
+            dragOverId === item.id && styles.itemDragOver
+          )}
           draggable
           onDragStart={(e) => handleDragStart(e, item.id)}
           onDragEnd={handleDragEnd}
@@ -81,14 +118,13 @@ const ReorderList = ({ items, onChangeOrder }: ReorderListProps) => {
           onDrop={(e) => handleDrop(e, item.id)}
         >
           <span className={styles.itemLabel}>{item.label}</span>
-          <Image
-            src={ReorderIcon}
-            alt=""
-            width={24}
-            height={24}
+          <svg
+            aria-hidden="true"
+            viewBox="0 -960 960 960"
             className={styles.itemIcon}
-            draggable={false}
-          />
+          >
+            <path d="M120-200v-80h720v80H120Zm0-160v-80h720v80H120Zm0-160v-80h720v80H120Zm0-160v-80h720v80H120Z" />
+          </svg>
         </div>
       ))}
     </div>

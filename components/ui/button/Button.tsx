@@ -14,6 +14,7 @@ type ButtonProps = {
   outlined?: boolean;
   filled?: boolean;
 
+  /** @deprecated Prefer outlined / filled booleans */
   variant?: "filled" | "outlined";
   disabled?: boolean;
 };

@@ -11,7 +11,10 @@ export default function UiTestWrapper({ children }: UiTestWrapperProps) {
         padding: "2rem",
         display: "flex",
         flexDirection: "column",
-        gap: "2rem",
+        gap: "2.5rem",
+        maxWidth: "48rem",
+        marginLeft: "auto",
+        marginRight: "auto",
       }}
     >
       {children}

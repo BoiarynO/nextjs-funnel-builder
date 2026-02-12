@@ -1,8 +1,9 @@
 import Button from "@/components/ui/button/Button";
+import Heading from "@/components/ui/heading/Heading";
 
 function Label({ children }: { children: React.ReactNode }) {
   return (
-    <div style={{ marginBottom: "0.5rem", fontSize: "0.875rem", color: "#666" }}>
+    <div style={{ marginBottom: "0.5rem", fontSize: "0.875rem", color: "var(--secondary-text-color)" }}>
       {children}
     </div>
   );
@@ -12,16 +13,12 @@ export default function UiButtonTest() {
   return (
     <section style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
       <div>
-        <h3 style={{ fontSize: "1rem", fontWeight: 600, marginBottom: "0.5rem" }}>
-          Text colors
-        </h3>
-        <p style={{ color: "var(--primary-text-color)" }}>Primary text example</p>
+        <Heading as="h3">Text colors</Heading>
+        <p style={{ marginTop: "0.5rem", color: "var(--primary-text-color)" }}>Primary text example</p>
         <p style={{ color: "var(--secondary-text-color)" }}>Secondary text example</p>
       </div>
 
-      <h2 style={{ fontSize: "1.25rem", fontWeight: 600, marginBottom: "0.5rem" }}>
-        Button
-      </h2>
+      <Heading as="h2">Button</Heading>
 
       <div>
         <Label>Default</Label>

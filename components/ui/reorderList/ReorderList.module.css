@@ -8,6 +8,19 @@
   background-color: #fff;
 }
 
+.fill {
+  width: 100%;
+}
+
+.outlined {
+  border-color: var(--color-primary-600);
+}
+
+.filled {
+  border-color: var(--color-primary-300);
+  background-color: var(--color-primary-100);
+}
+
 .item {
   display: flex;
   align-items: center;
@@ -28,6 +41,9 @@
 .itemIcon {
   flex-shrink: 0;
   pointer-events: none;
+  width: 24px;
+  height: 24px;
+  fill: var(--color-primary-600);
 }
 
 .item:active {
@@ -41,6 +57,6 @@
 }
 
 .itemDragOver {
-  border-color: #3b82f6;
-  background-color: #eff6ff;
+  border-color: var(--color-primary-600);
+  background-color: var(--color-primary-100);
 }

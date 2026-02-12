@@ -3,6 +3,11 @@
   display: inline-block;
 }
 
+.fill {
+  display: block;
+  width: 100%;
+}
+
 .label {
   padding: 0.5rem 0.75rem;
   border-radius: 0.375rem;
@@ -14,6 +19,27 @@
 
 .label:hover {
   background-color: #f9fafb;
+}
+
+.labelOutlined {
+  border-color: var(--color-primary-600);
+  background-color: transparent;
+  color: var(--color-primary-600);
+}
+
+.labelOutlined:hover {
+  background-color: var(--color-primary-100);
+}
+
+.labelFilled {
+  border-color: var(--color-primary-600);
+  background-color: var(--color-primary-600);
+  color: var(--color-on-primary);
+}
+
+.labelFilled:hover {
+  background-color: var(--color-primary-700);
+  border-color: var(--color-primary-700);
 }
 
 .panel {

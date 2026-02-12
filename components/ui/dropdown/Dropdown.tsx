@@ -1,16 +1,41 @@
 "use client";
 
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import {
+  useEffect,
+  useRef,
+  useState,
+  type CSSProperties,
+  type ReactNode,
+} from "react";
+import classNames from "classnames";
+
 import styles from "./Dropdown.module.css";
 
 type DropdownProps = {
   label: ReactNode;
   children: ReactNode;
+  className?: string;
+  style?: CSSProperties;
+  basic?: boolean;
+  fill?: boolean;
+  outlined?: boolean;
+  filled?: boolean;
 };
 
-const Dropdown = ({ label, children }: DropdownProps) => {
+const Dropdown = ({
+  label,
+  children,
+  className = "",
+  style = {},
+  basic,
+  fill = false,
+  outlined = false,
+  filled = false,
+}: DropdownProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+
+  void basic;
 
   useEffect(() => {
     if (!isOpen) return;
@@ -26,11 +51,25 @@ const Dropdown = ({ label, children }: DropdownProps) => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [isOpen]);
 
+  const variantClass = filled
+    ? styles.labelFilled
+    : outlined
+      ? styles.labelOutlined
+      : undefined;
+
   return (
-    <div className={styles.container} ref={containerRef}>
+    <div
+      className={classNames(
+        styles.container,
+        fill && styles.fill,
+        className
+      )}
+      style={style}
+      ref={containerRef}
+    >
       <button
         type="button"
-        className={styles.label}
+        className={classNames(styles.label, variantClass)}
         onClick={() => setIsOpen((prev) => !prev)}
       >
         {label}
