@@ -4,6 +4,13 @@
   gap: 1rem;
 }
 
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
 .title {
   font-size: 1.5rem;
   font-weight: 600;
