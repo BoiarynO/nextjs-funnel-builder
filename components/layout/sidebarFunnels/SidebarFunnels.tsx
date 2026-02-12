@@ -1,8 +1,9 @@
 import Image from "next/image";
-import type { Funnel } from "@/types/funnel";
+
 import DeleteIcon from "@/assets/icons/delete.svg";
 import { useFunnelsStore } from "@/stores/funnelsStore";
 import { MAX_FUNNELS } from "@/config/limits";
+
 import styles from "./SidebarFunnels.module.css";
 
 const SidebarFunnels = () => {

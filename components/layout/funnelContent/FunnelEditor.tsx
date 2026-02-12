@@ -5,7 +5,7 @@ import Image from "next/image";
 
 import type { Funnel, Step } from "@/types/funnel";
 import { useFunnelsStore } from "@/stores/funnelsStore";
-import ButtonDownloadFunnelJson from "@/components/buttonDownloadFunnelJson/ButtonDownloadFunnelJson";
+import ButtonDownloadFunnelJson from "@/components/layout/buttonDownloadFunnelJson/ButtonDownloadFunnelJson";
 import ReorderList, {
   type ReorderItem,
 } from "@/components/ui/reorderList/ReorderList";

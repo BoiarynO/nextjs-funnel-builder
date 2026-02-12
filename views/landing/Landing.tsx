@@ -1,4 +1,5 @@
 import Link from "next/link";
+
 import styles from "./Landing.module.css";
 
 const Landing = () => {
@@ -18,4 +19,3 @@ const Landing = () => {
 };
 
 export default Landing;
-
