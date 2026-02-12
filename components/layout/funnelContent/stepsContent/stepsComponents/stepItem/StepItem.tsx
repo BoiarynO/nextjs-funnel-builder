@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
 
 import type { Step, TranslationKeyFormat } from "@/types/funnel";
 import { formatTranslationKey } from "@/utils/formatTranslationKey";
@@ -63,12 +62,11 @@ const StepItem = ({
         >
           <span className={styles.title}>{step.commonTitle}</span>
           {isEditMode ? (
-            <Image
-              src={ReorderIcon}
-              alt=""
+            <ReorderIcon
               width={24}
               height={24}
               className={styles.reorderIcon}
+              aria-hidden
             />
           ) : (
             <ArrowIcon expanded={expanded} />
@@ -81,7 +79,7 @@ const StepItem = ({
             onClick={handleEditClick}
             aria-label="Edit step"
           >
-            <Image src={EditIcon} alt="" width={20} height={20} />
+            <EditIcon width={20} height={20} aria-hidden />
           </button>
         )}
       </div>

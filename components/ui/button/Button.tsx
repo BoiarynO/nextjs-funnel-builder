@@ -14,6 +14,9 @@ type ButtonProps = {
   outlined?: boolean;
   filled?: boolean;
 
+  /** Коли true — кнопка візуально заповнена (filled), без потреби передавати filled окремо */
+  active?: boolean;
+
   /** @deprecated Prefer outlined / filled booleans */
   variant?: "filled" | "outlined";
   disabled?: boolean;
@@ -31,11 +34,12 @@ export default function Button({
   filled: filledProp = false,
   variant,
   disabled = false,
+  active = false,
 }: ButtonProps) {
   void basic;
 
   const isOutlined = outlinedProp || variant === "outlined";
-  const isFilled = filledProp || variant === "filled";
+  const isFilled = filledProp || variant === "filled" || active;
 
   const variantKey =
     isOutlined && !isFilled ? "outlined" : isFilled ? "filled" : "default";

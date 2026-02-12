@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import classNames from "classnames";
+
 import styles from "./Heading.module.css";
 
 type HeadingTag = "h1" | "h2" | "h3" | "h4" | "h5";
@@ -10,6 +11,7 @@ type HeadingProps = {
   className?: string;
   style?: React.CSSProperties;
   fill?: boolean;
+  colored?: boolean;
 };
 
 const tagToLevel: Record<HeadingTag, keyof typeof styles> = {
@@ -26,12 +28,22 @@ export default function Heading({
   className = "",
   style = {},
   fill = false,
+  colored = false,
 }: HeadingProps) {
   const Tag = as;
   const levelClass = tagToLevel[as];
+  const fillClass = fill && styles.fill;
+  const coloredClass = colored && styles.colored;
+
   return (
     <Tag
-      className={classNames(styles.root, levelClass, fill && styles.fill, className)}
+      className={classNames(
+        styles.root,
+        levelClass,
+        fillClass,
+        coloredClass,
+        className
+      )}
       style={style}
     >
       {children}

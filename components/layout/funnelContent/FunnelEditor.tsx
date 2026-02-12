@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import Image from "next/image";
 
 import type { Funnel, Step } from "@/types/funnel";
 import { useFunnelsStore } from "@/stores/funnelsStore";
@@ -87,7 +86,7 @@ const FunnelEditor = () => {
             disabled={isFunnelEditDisabled}
             aria-label={isEditMode ? "Exit edit mode" : "Edit funnel"}
           >
-            <Image src={EditIcon} alt="" width={24} height={24} />
+            <EditIcon width={24} height={24} aria-hidden />
           </button>
         </div>
         <ButtonDownloadFunnelJson />

@@ -1,61 +1,32 @@
-import Image from "next/image";
-
-import DeleteIcon from "@/assets/icons/delete.svg";
 import { useFunnelsStore } from "@/stores/funnelsStore";
 import { MAX_FUNNELS } from "@/config/limits";
+import Heading from "@/components/ui/heading/Heading";
+import Button from "@/components/ui/button/Button";
 
 import styles from "./SidebarFunnels.module.css";
+import FunnelsList from "./funnelsList/FunnelsList";
 
 const SidebarFunnels = () => {
   const funnels = useFunnelsStore((s) => s.funnels);
-  const selectedFunnelId = useFunnelsStore((s) => s.selectedFunnelId);
-  const selectFunnel = useFunnelsStore((s) => s.selectFunnel);
   const startCreateFunnel = useFunnelsStore((s) => s.startCreateFunnel);
-  const deleteFunnel = useFunnelsStore((s) => s.deleteFunnel);
 
   const canCreateFunnel = funnels.length < MAX_FUNNELS;
 
   return (
     <div className={styles.container}>
-      <h2 className={styles.header}>Funnels</h2>
-      <div className={styles.list}>
-        {funnels.length === 0 && (
-          <p className={styles.emptyState}>List is empty</p>
-        )}
-        {funnels.map((funnel) => (
-          <div key={funnel.id} className={styles.itemRow}>
-            <button
-              type="button"
-              className={`${styles.itemButton} ${
-                funnel.id === selectedFunnelId ? styles.itemButtonActive : ""
-              }`}
-              onClick={() => selectFunnel(funnel)}
-            >
-              {funnel.name}
-            </button>
-            <button
-              type="button"
-              className={styles.deleteButton}
-              onClick={() => deleteFunnel(funnel.id)}
-              aria-label={`Delete funnel ${funnel.name}`}
-            >
-              <Image
-                src={DeleteIcon}
-                alt=""
-                className={styles.deleteButtonIcon}
-              />
-            </button>
-          </div>
-        ))}
-      </div>
-      <button
+      <Heading as="h2" colored>
+        Funnels
+      </Heading>
+
+      <FunnelsList />
+
+      <Button
         type="button"
-        className={styles.createButton}
         onClick={startCreateFunnel}
         disabled={!canCreateFunnel}
       >
         Create funnel
-      </button>
+      </Button>
     </div>
   );
 };

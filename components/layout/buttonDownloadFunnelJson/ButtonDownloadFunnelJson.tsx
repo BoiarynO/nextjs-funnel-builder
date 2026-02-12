@@ -2,8 +2,7 @@ import { useCallback } from "react";
 
 import type { Funnel } from "@/types/funnel";
 import { useFunnelsStore } from "@/stores/funnelsStore";
-
-import styles from "./ButtonDownloadFunnelJson.module.css";
+import Button from "@/components/ui/button/Button";
 
 const getFileName = (): string => {
   const now = new Date();
@@ -44,14 +43,9 @@ const ButtonDownloadFunnelJson = () => {
   }, [selectedFunnel]);
 
   return (
-    <button
-      type="button"
-      className={styles.button}
-      onClick={handleClick}
-      disabled={disabled}
-    >
+    <Button type="button" outlined onClick={handleClick} disabled={disabled}>
       Download funnel JSON
-    </button>
+    </Button>
   );
 };
 
