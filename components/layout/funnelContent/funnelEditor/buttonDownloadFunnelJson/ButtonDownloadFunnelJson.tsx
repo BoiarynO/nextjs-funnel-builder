@@ -19,7 +19,7 @@ const ButtonDownloadFunnelJson = () => {
   const selectedFunnel =
     funnels.find((f: Funnel) => f.id === selectedFunnelId) ?? null;
 
-  const disabled = !selectedFunnel;
+  const disabled = !selectedFunnel?.steps.length;
 
   const handleClick = useCallback(() => {
     if (!selectedFunnel) return;

@@ -30,23 +30,6 @@
   max-width: 320px;
 }
 
-.editButton {
-  padding: 0.25rem;
-  border: none;
-  background: none;
-  cursor: pointer;
-  border-radius: 0.375rem;
-}
-
-.editButton:hover:not(:disabled) {
-  background-color: #f3f4f6;
-}
-
-.editButton:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
 .reorderSection {
   display: flex;
   flex-direction: column;
@@ -61,6 +44,6 @@
 
 .emptyText {
   font-size: 0.9rem;
-  color: #6b7280;
+  color: var(--secondary-text-color);
   margin: 0;
 }

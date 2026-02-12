@@ -3,6 +3,7 @@
 import { useState, useCallback, type CSSProperties } from "react";
 import classNames from "classnames";
 
+import ReorderIcon from "./assets/reorder.svg";
 import styles from "./ReorderList.module.css";
 
 export type ReorderItem = {
@@ -118,13 +119,12 @@ const ReorderList = ({
           onDrop={(e) => handleDrop(e, item.id)}
         >
           <span className={styles.itemLabel}>{item.label}</span>
-          <svg
-            aria-hidden="true"
-            viewBox="0 -960 960 960"
+          <ReorderIcon
+            width={24}
+            height={24}
+            aria-hidden
             className={styles.itemIcon}
-          >
-            <path d="M120-200v-80h720v80H120Zm0-160v-80h720v80H120Zm0-160v-80h720v80H120Zm0-160v-80h720v80H120Z" />
-          </svg>
+          />
         </div>
       ))}
     </div>

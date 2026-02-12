@@ -1,7 +1,7 @@
 import type { Funnel } from "@/types/funnel";
 import { useFunnelsStore } from "@/stores/funnelsStore";
 
-import FunnelEditor from "./FunnelEditor";
+import FunnelEditor from "./funnelEditor/FunnelEditor";
 import styles from "./FunnelContent.module.css";
 
 const FunnelContent = () => {
