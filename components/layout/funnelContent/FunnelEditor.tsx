@@ -5,7 +5,7 @@ import Image from "next/image";
 
 import type { Funnel, Step } from "@/types/funnel";
 import { useFunnelsStore } from "@/stores/funnelsStore";
-import ButtonDownloadFunnelJson from "@/components/ButtonDownloadFunnelJson";
+import ButtonDownloadFunnelJson from "@/components/buttonDownloadFunnelJson/ButtonDownloadFunnelJson";
 import ReorderList, {
   type ReorderItem,
 } from "@/components/ui/reorderList/ReorderList";
@@ -81,7 +81,9 @@ const FunnelEditor = () => {
           <button
             type="button"
             className={styles.editButton}
-            onClick={() => !isFunnelEditDisabled && setIsEditMode((prev) => !prev)}
+            onClick={() =>
+              !isFunnelEditDisabled && setIsEditMode((prev) => !prev)
+            }
             disabled={isFunnelEditDisabled}
             aria-label={isEditMode ? "Exit edit mode" : "Edit funnel"}
           >

@@ -4,8 +4,8 @@ import type { Funnel } from "@/types/funnel";
 import { useFunnelsStore } from "@/stores/funnelsStore";
 import { MAX_QUESTIONS_PER_FUNNEL } from "@/config/limits";
 import Button from "@/components/ui/button/Button";
-import StepsForm from "@/components/funnelContent/stepsContent/stepsComponents/stepsForm/StepsForm";
-import StepItem from "@/components/funnelContent/stepsContent/stepsComponents/stepItem/StepItem";
+import StepsForm from "@/components/layout/funnelContent/stepsContent/stepsComponents/stepsForm/StepsForm";
+import StepItem from "@/components/layout/funnelContent/stepsContent/stepsComponents/stepItem/StepItem";
 
 import styles from "./StepsContent.module.css";
 
@@ -28,8 +28,7 @@ const StepsContent = ({
   const selectedFunnelId = useFunnelsStore((s) => s.selectedFunnelId);
   const updateFunnel = useFunnelsStore((s) => s.updateFunnel);
 
-  const funnel =
-    funnels.find((f: Funnel) => f.id === selectedFunnelId) ?? null;
+  const funnel = funnels.find((f: Funnel) => f.id === selectedFunnelId) ?? null;
 
   if (!funnel) {
     return null;
@@ -37,7 +36,7 @@ const StepsContent = ({
 
   const limitReached = funnel.steps.length >= MAX_QUESTIONS_PER_FUNNEL;
   const editingStep = editingStepId
-    ? funnel.steps.find((s) => s.id === editingStepId) ?? null
+    ? (funnel.steps.find((s) => s.id === editingStepId) ?? null)
     : null;
 
   return (
