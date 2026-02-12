@@ -57,3 +57,15 @@
 .outlined:active:not(:disabled) {
   background-color: var(--color-primary-300);
 }
+
+/* Active state (current page) */
+.active.default,
+.active.outlined {
+  background-color: var(--color-primary-100);
+  color: var(--color-primary-700);
+}
+
+.active.filled {
+  background-color: var(--color-primary-650);
+  border-color: var(--color-primary-650);
+}

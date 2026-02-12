@@ -11,6 +11,20 @@ import classNames from "classnames";
 
 import styles from "./Dropdown.module.css";
 
+export type DropdownPosition =
+  | "bottom-left"
+  | "bottom-right"
+  | "bottom-center"
+  | "top-left"
+  | "top-right"
+  | "top-center"
+  | "left-top"
+  | "left-bottom"
+  | "left-center"
+  | "right-top"
+  | "right-bottom"
+  | "right-center";
+
 type DropdownProps = {
   label: ReactNode;
   children: ReactNode;
@@ -20,6 +34,7 @@ type DropdownProps = {
   fill?: boolean;
   outlined?: boolean;
   filled?: boolean;
+  position?: DropdownPosition;
 };
 
 const Dropdown = ({
@@ -31,6 +46,7 @@ const Dropdown = ({
   fill = false,
   outlined = false,
   filled = false,
+  position = "bottom-left",
 }: DropdownProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -74,7 +90,16 @@ const Dropdown = ({
       >
         {label}
       </button>
-      {isOpen && <div className={styles.panel}>{children}</div>}
+      {isOpen && (
+        <div
+          className={classNames(
+            styles.panel,
+            styles[`panel_${position.replace(/-/g, "_")}`]
+          )}
+        >
+          {children}
+        </div>
+      )}
     </div>
   );
 };

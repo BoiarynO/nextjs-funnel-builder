@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
 import classNames from "classnames";
+
 import buttonStyles from "./LinkButton.module.css";
 
 type LinkButtonProps = {
@@ -12,6 +13,7 @@ type LinkButtonProps = {
   fill?: boolean;
   outlined?: boolean;
   filled?: boolean;
+  active?: boolean;
 };
 
 export default function LinkButton({
@@ -23,6 +25,7 @@ export default function LinkButton({
   fill = false,
   outlined: outlinedProp = false,
   filled: filledProp = false,
+  active = false,
 }: LinkButtonProps) {
   void basic;
   const isOutlined = outlinedProp;
@@ -37,6 +40,7 @@ export default function LinkButton({
         buttonStyles.root,
         buttonStyles[variantKey],
         fill && buttonStyles.fill,
+        active && buttonStyles.active,
         className
       )}
       style={style}
