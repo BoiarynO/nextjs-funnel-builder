@@ -1,0 +1,45 @@
+.container {
+  border: 1px solid var(--color-primary-600);
+  border-radius: 0.5rem;
+  background-color: var(--background);
+  overflow: hidden;
+}
+
+.headerRow {
+  display: flex;
+  align-items: center;
+}
+
+.headerRow button {
+  padding: 0.75rem;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1rem;
+  text-align: left;
+  border-radius: 0px !important;
+}
+
+.header:hover {
+  background-color: var(--primary-100);
+}
+
+.editIconButton {
+  height: 100%;
+  border-radius: 0px !important;
+  fill: currentColor;
+}
+
+.arrow {
+  width: 24px;
+  height: 24px;
+  transition: transform 0.3s ease;
+  fill: currentColor;
+}
+
+.arrowExpanded {
+  transform: rotate(180deg);
+}

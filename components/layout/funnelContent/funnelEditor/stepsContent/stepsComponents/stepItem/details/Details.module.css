@@ -1,0 +1,42 @@
+.details {
+  padding: 1rem;
+  border-top: 1px solid var(--color-primary-600);
+  background-color: var(--background);
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.detailRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 0.5rem;
+  font-size: 0.875rem;
+}
+
+.detailLabel {
+  font-weight: 500;
+  color: var(--secondary-text-color);
+  min-width: 10rem;
+}
+
+.pointsSection {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.pointsList {
+  margin: 0;
+  padding-left: 1.25rem;
+}
+
+.pointItem {
+  font-size: 0.875rem;
+  margin-bottom: 0.25rem;
+}
+
+.pointKey {
+  color: var(--secondary-text-color);
+  margin-left: 0.25rem;
+}

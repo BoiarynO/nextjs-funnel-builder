@@ -1,0 +1,31 @@
+.itemRow {
+  display: flex;
+  align-items: center;
+  gap: 0;
+}
+
+.itemButton {
+  border-bottom-right-radius: 0px !important;
+  border-top-right-radius: 0px !important;
+}
+
+.itemButtonActive {
+  background-color: #111827;
+  color: #ffffff;
+}
+
+.deleteButton {
+  height: 100%;
+  border-bottom-left-radius: 0px !important;
+  border-top-left-radius: 0px !important;
+  border-left: none !important;
+}
+
+.deleteButton svg {
+  fill: var(--color-primary-600);
+}
+
+.deleteButtonIcon {
+  width: 1.5rem;
+  height: 1.5rem;
+}

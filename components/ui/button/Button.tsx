@@ -1,46 +1,63 @@
-import type { ButtonHTMLAttributes, ReactNode } from "react";
+import type { ReactNode } from "react";
+import classNames from "classnames";
+
 import styles from "./Button.module.css";
 
 type ButtonProps = {
   children: ReactNode;
-  onClick?: () => void;
-  type?: "button" | "submit";
-  variant?: "filled" | "outlined";
-  color?: string;
-  disabled?: boolean;
-} & Omit<ButtonHTMLAttributes<HTMLButtonElement>, "onClick">;
+  onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
+  type?: "button" | "submit" | "reset";
+  className?: string;
+  style?: React.CSSProperties;
+  basic?: boolean;
+  fill?: boolean;
+  outlined?: boolean;
+  filled?: boolean;
 
-const Button = ({
+  /** Коли true — кнопка візуально заповнена (filled), без потреби передавати filled окремо */
+  active?: boolean;
+
+  /** @deprecated Prefer outlined / filled booleans */
+  variant?: "filled" | "outlined";
+  disabled?: boolean;
+};
+
+export default function Button({
   children,
   onClick,
   type = "button",
-  variant = "filled",
-  color,
-  disabled,
-  className,
-  ...restProps
-}: ButtonProps) => {
-  const variantClass = variant === "outlined" ? styles.outlined : styles.filled;
-  const style = color
-    ? {
-        ...(variant === "filled"
-          ? { backgroundColor: color, borderColor: color }
-          : { borderColor: color }),
-      }
-    : undefined;
+  className = "",
+  style = {},
+  basic,
+  fill = false,
+  outlined: outlinedProp = false,
+  filled: filledProp = false,
+  variant,
+  disabled = false,
+  active = false,
+}: ButtonProps) {
+  void basic;
+
+  const isOutlined = outlinedProp || variant === "outlined";
+  const isFilled = filledProp || variant === "filled" || active;
+
+  const variantKey =
+    isOutlined && !isFilled ? "outlined" : isFilled ? "filled" : "default";
 
   return (
     <button
       type={type}
-      className={`${styles.root} ${variantClass} ${className ?? ""}`.trim()}
+      className={classNames(
+        styles.root,
+        styles[variantKey],
+        fill && styles.fill,
+        className
+      )}
       style={style}
       onClick={onClick}
       disabled={disabled}
-      {...restProps}
     >
       {children}
     </button>
   );
-};
-
-export default Button;
+}

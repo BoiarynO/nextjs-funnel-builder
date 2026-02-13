@@ -1,5 +1,11 @@
 import { forwardRef } from "react";
-import type { InputHTMLAttributes, ChangeEvent } from "react";
+import type {
+  ChangeEvent,
+  CSSProperties,
+  InputHTMLAttributes,
+} from "react";
+import classNames from "classnames";
+
 import styles from "./Input.module.css";
 
 type InputProps = {
@@ -7,18 +13,53 @@ type InputProps = {
   onChange: (event: ChangeEvent<HTMLInputElement>) => void;
   placeholder?: string;
   type?: string;
-} & Omit<InputHTMLAttributes<HTMLInputElement>, "value" | "onChange" | "type">;
+  className?: string;
+  style?: CSSProperties;
+  basic?: boolean;
+  fill?: boolean;
+  outlined?: boolean;
+  filled?: boolean;
+} & Omit<
+  InputHTMLAttributes<HTMLInputElement>,
+  "value" | "onChange" | "type" | "className" | "style"
+>;
 
 const Input = forwardRef<HTMLInputElement, InputProps>(
   (
-    { value, onChange, placeholder, type = "text", className, ...restProps },
+    {
+      value,
+      onChange,
+      placeholder,
+      type = "text",
+      className = "",
+      style = {},
+      basic,
+      fill = false,
+      outlined = false,
+      filled = false,
+      ...restProps
+    },
     ref
   ) => {
+    void basic;
+
+    const variantClass = filled
+      ? styles.filled
+      : outlined
+        ? styles.outlined
+        : undefined;
+
     return (
       <input
         ref={ref}
         type={type}
-        className={`${styles.root} ${className ?? ""}`.trim()}
+        className={classNames(
+          styles.root,
+          variantClass,
+          fill && styles.fill,
+          className
+        )}
+        style={style}
         value={value}
         onChange={onChange}
         placeholder={placeholder}

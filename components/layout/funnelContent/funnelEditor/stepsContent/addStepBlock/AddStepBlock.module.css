@@ -1,0 +1,12 @@
+.addRow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.helperText {
+  font-size: 0.85rem;
+  color: var(--secondary-text-color);
+  margin: 0;
+}

@@ -3,6 +3,11 @@
   display: inline-block;
 }
 
+.fill {
+  display: block;
+  width: 100%;
+}
+
 .label {
   padding: 0.5rem 0.75rem;
   border-radius: 0.375rem;
@@ -16,15 +21,123 @@
   background-color: #f9fafb;
 }
 
+.labelOutlined {
+  border-color: var(--color-primary-600);
+  background-color: transparent;
+  color: var(--color-primary-600);
+}
+
+.labelOutlined:hover {
+  background-color: var(--color-primary-100);
+}
+
+.labelFilled {
+  border-color: var(--color-primary-600);
+  background-color: var(--color-primary-600);
+  color: var(--color-on-primary);
+}
+
+.labelFilled:hover {
+  background-color: var(--color-primary-700);
+  border-color: var(--color-primary-700);
+}
+
 .panel {
   position: absolute;
-  top: 100%;
-  left: 0;
-  margin-top: 0.25rem;
   padding: 0.5rem;
   min-width: 100%;
   border-radius: 0.375rem;
   border: 1px solid #e5e7eb;
   background-color: #fff;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Bottom: нижня сторона */
+.panel_bottom_left {
+  top: 100%;
+  left: 0;
+  margin-top: 0.25rem;
+}
+
+.panel_bottom_right {
+  top: 100%;
+  right: 0;
+  left: auto;
+  margin-top: 0.25rem;
+}
+
+.panel_bottom_center {
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-top: 0.25rem;
+}
+
+/* Top: верхня сторона */
+.panel_top_left {
+  bottom: 100%;
+  top: auto;
+  left: 0;
+  margin-bottom: 0.25rem;
+}
+
+.panel_top_right {
+  bottom: 100%;
+  top: auto;
+  right: 0;
+  left: auto;
+  margin-bottom: 0.25rem;
+}
+
+.panel_top_center {
+  bottom: 100%;
+  top: auto;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-bottom: 0.25rem;
+}
+
+/* Left: ліва сторона */
+.panel_left_top {
+  right: 100%;
+  left: auto;
+  top: 0;
+  margin-right: 0.25rem;
+}
+
+.panel_left_bottom {
+  right: 100%;
+  left: auto;
+  bottom: 0;
+  top: auto;
+  margin-right: 0.25rem;
+}
+
+.panel_left_center {
+  right: 100%;
+  left: auto;
+  top: 50%;
+  transform: translateY(-50%);
+  margin-right: 0.25rem;
+}
+
+/* Right: права сторона */
+.panel_right_top {
+  left: 100%;
+  top: 0;
+  margin-left: 0.25rem;
+}
+
+.panel_right_bottom {
+  left: 100%;
+  bottom: 0;
+  top: auto;
+  margin-left: 0.25rem;
+}
+
+.panel_right_center {
+  left: 100%;
+  top: 50%;
+  transform: translateY(-50%);
+  margin-left: 0.25rem;
 }

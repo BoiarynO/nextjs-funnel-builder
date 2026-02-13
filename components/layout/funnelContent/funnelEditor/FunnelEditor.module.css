@@ -1,0 +1,51 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0 0 1rem 0;
+  border-bottom: 1px solid var(--color-primary-600);
+}
+
+.titleRow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.titleInput {
+  flex: 1;
+  max-width: 320px;
+}
+
+.reorderSection {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.reorderHeading {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.emptyText {
+  font-size: 0.9rem;
+  color: var(--secondary-text-color);
+  margin: 0;
+}

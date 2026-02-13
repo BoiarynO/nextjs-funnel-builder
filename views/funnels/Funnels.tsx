@@ -2,9 +2,9 @@
 
 import { useEffect } from "react";
 
-import SidebarFunnels from "@/components/sidebarFunnels/SidebarFunnels";
-import FunnelContent from "@/components/funnelContent/FunnelContent";
-import CreateFunnelForm from "@/components/createFunnelForm/CreateFunnelForm";
+import SidebarFunnels from "@/components/layout/sidebarFunnels/SidebarFunnels";
+import FunnelContent from "@/components/layout/funnelContent/FunnelContent";
+import CreateFunnelForm from "@/components/layout/createFunnelForm/CreateFunnelForm";
 import { useFunnelsStore } from "@/stores/funnelsStore";
 
 import styles from "./Funnels.module.css";

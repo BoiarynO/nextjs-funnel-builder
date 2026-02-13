@@ -1,0 +1,112 @@
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  background-color: #fafafa;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.label {
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.select {
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.375rem;
+  border: 1px solid #d1d5db;
+  font: inherit;
+}
+
+.inputTranslationKey {
+  min-height: 32px;
+  padding: 0.35rem 0.75rem;
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 0.75rem 0;
+  border-top: 1px solid #e5e7eb;
+}
+
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.sectionLabel {
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.pointGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.375rem;
+  background-color: #f9fafb;
+}
+
+.pointRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+
+.pointInputs {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.pointGroup .pointInputs input {
+  width: 100%;
+}
+
+.pointDeleteButton {
+  flex-shrink: 0;
+  padding: 0.5rem;
+}
+
+.pointDeleteButton svg {
+  fill: var(--color-primary-600);
+}
+
+.pointDeleteIcon {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.nullValue {
+  font-size: 0.875rem;
+  color: #9ca3af;
+  font-style: italic;
+  padding: 0.5rem 0;
+}
+
+.actions {
+  display: flex;
+  gap: 0.5rem;
+  padding-top: 0.5rem;
+}
+
+.error {
+  font-size: 0.875rem;
+  color: #dc2626;
+}

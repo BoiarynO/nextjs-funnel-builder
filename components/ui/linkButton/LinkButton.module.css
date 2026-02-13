@@ -1,0 +1,71 @@
+.root {
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.375rem;
+  cursor: pointer;
+  font: inherit;
+}
+
+.fill {
+  width: 100%;
+}
+
+.root:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.default {
+  border: 1px solid transparent;
+  background-color: transparent;
+  color: var(--color-primary-600);
+}
+
+.default:hover:not(:disabled) {
+  background-color: var(--color-primary-100);
+}
+
+.default:active:not(:disabled) {
+  background-color: var(--color-primary-300);
+}
+
+.filled {
+  border: 1px solid var(--color-primary-600);
+  background-color: var(--color-primary-600);
+  color: var(--color-on-primary);
+}
+
+.filled:hover:not(:disabled) {
+  background-color: var(--color-primary-700);
+  border-color: var(--color-primary-700);
+}
+
+.filled:active:not(:disabled) {
+  background-color: var(--color-primary-650);
+  border-color: var(--color-primary-650);
+}
+
+.outlined {
+  border: 1px solid var(--color-primary-600);
+  background-color: transparent;
+  color: var(--color-primary-600);
+}
+
+.outlined:hover:not(:disabled) {
+  background-color: var(--color-primary-100);
+}
+
+.outlined:active:not(:disabled) {
+  background-color: var(--color-primary-300);
+}
+
+/* Active state (current page) */
+.active.default,
+.active.outlined {
+  background-color: var(--color-primary-100);
+  color: var(--color-primary-700);
+}
+
+.active.filled {
+  background-color: var(--color-primary-650);
+  border-color: var(--color-primary-650);
+}

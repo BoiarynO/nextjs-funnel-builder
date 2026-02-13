@@ -1,21 +1,24 @@
-import Link from "next/link";
+import Heading from "@/components/ui/heading/Heading";
+import LinkButton from "@/components/ui/linkButton/LinkButton";
+
 import styles from "./Landing.module.css";
 
 const Landing = () => {
   return (
     <main className={styles.container}>
       <div className={styles.content}>
-        <h1 className={styles.title}>Funnel Builder</h1>
+        <Heading as="h1" colored>
+          Funnel Builder
+        </Heading>
         <p className={styles.description}>
           Tool for creating funnels and exporting them as JSON.
         </p>
-        <Link href="/funnels" className={styles.button}>
+        <LinkButton filled href="/funnels">
           Go to My Funnels
-        </Link>
+        </LinkButton>
       </div>
     </main>
   );
 };
 
 export default Landing;
-
