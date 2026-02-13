@@ -1,7 +1,7 @@
 import { create } from "zustand";
 
 import type { Funnel } from "@/types/funnel";
-import { MAX_FUNNELS } from "@/config/limits";
+import { MAX_FUNNELS } from "@/utils/config/limits";
 import { loadFunnels, saveFunnels } from "@/utils/funnelsStorage";
 
 type FunnelsState = {

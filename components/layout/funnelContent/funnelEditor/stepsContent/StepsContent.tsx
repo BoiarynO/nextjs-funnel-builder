@@ -4,7 +4,7 @@ import { useState } from "react";
 
 import type { Funnel } from "@/types/funnel";
 import { useFunnelsStore } from "@/stores/funnelsStore";
-import { MAX_QUESTIONS_PER_FUNNEL } from "@/config/limits";
+import { MAX_QUESTIONS_PER_FUNNEL } from "@/utils/config/limits";
 import Heading from "@/components/ui/heading/Heading";
 
 import StepsList from "./stepsList/StepsList";
@@ -29,7 +29,7 @@ const StepsContent = ({
   const funnel = funnels.find((f: Funnel) => f.id === selectedFunnelId) ?? null;
   const editingStep =
     funnel && editingStepId
-      ? funnel.steps.find((s) => s.id === editingStepId) ?? null
+      ? (funnel.steps.find((s) => s.id === editingStepId) ?? null)
       : null;
 
   if (!funnel) {

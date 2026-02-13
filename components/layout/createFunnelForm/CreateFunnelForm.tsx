@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 
 import type { Funnel } from "@/types/funnel";
-import { DEFAULT_COMPONENT_TYPES } from "@/types/funnel";
-import { MAX_FUNNELS } from "@/config/limits";
+import { DEFAULT_COMPONENT_TYPES } from "@/utils/variables";
+import { MAX_FUNNELS } from "@/utils/config/limits";
 import { useFunnelsStore } from "@/stores/funnelsStore";
 import Button from "@/components/ui/button/Button";
 import Input from "@/components/ui/input/Input";

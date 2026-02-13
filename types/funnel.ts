@@ -1,7 +1,5 @@
 export type TranslationKeyFormat = "camelCase" | "snake_case" | "kebab-case";
 
-export const DEFAULT_COMPONENT_TYPES = ["singleSelect", "multiselect"];
-
 export type Step = {
   id: string;
   componentType: string | null;

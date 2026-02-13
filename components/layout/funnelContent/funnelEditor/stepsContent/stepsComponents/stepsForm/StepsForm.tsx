@@ -3,9 +3,9 @@
 import { useState, useCallback } from "react";
 
 import type { Funnel, Step, TranslationKeyFormat } from "@/types/funnel";
-import { DEFAULT_COMPONENT_TYPES } from "@/types/funnel";
-import { formatTranslationKey } from "@/utils/formatTranslationKey";
-import { MAX_QUESTIONS_PER_FUNNEL } from "@/config/limits";
+import { DEFAULT_COMPONENT_TYPES } from "@/utils/variables";
+import { formatTranslationKey } from "@/utils/formatting/formatTranslationKey";
+import { MAX_QUESTIONS_PER_FUNNEL } from "@/utils/config/limits";
 import Button from "@/components/ui/button/Button";
 import Input from "@/components/ui/input/Input";
 import ReorderList, {

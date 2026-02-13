@@ -1,5 +1,5 @@
 import { useFunnelsStore } from "@/stores/funnelsStore";
-import { MAX_FUNNELS } from "@/config/limits";
+import { MAX_FUNNELS } from "@/utils/config/limits";
 import Heading from "@/components/ui/heading/Heading";
 import Button from "@/components/ui/button/Button";
 

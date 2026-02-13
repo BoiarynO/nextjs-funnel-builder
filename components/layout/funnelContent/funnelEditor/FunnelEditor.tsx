@@ -2,12 +2,8 @@
 
 import { useState, useCallback } from "react";
 
-import type {
-  Funnel,
-  Step,
-  TranslationKeyFormat,
-} from "@/types/funnel";
-import { DEFAULT_COMPONENT_TYPES } from "@/types/funnel";
+import type { Funnel, Step, TranslationKeyFormat } from "@/types/funnel";
+import { DEFAULT_COMPONENT_TYPES } from "@/utils/variables";
 import { useFunnelsStore } from "@/stores/funnelsStore";
 import ButtonDownloadFunnelJson from "@/components/layout/funnelContent/funnelEditor/buttonDownloadFunnelJson/ButtonDownloadFunnelJson";
 import type { ReorderItem } from "@/components/ui/reorderList/ReorderList";
@@ -68,7 +64,14 @@ const FunnelEditor = () => {
     };
     updateFunnel(updated);
     setIsEditMode(false);
-  }, [selectedFunnel, draftName, draftTranslationKeyFormat, draftComponentTypes, draftSteps, updateFunnel]);
+  }, [
+    selectedFunnel,
+    draftName,
+    draftTranslationKeyFormat,
+    draftComponentTypes,
+    draftSteps,
+    updateFunnel,
+  ]);
 
   const handleCancel = () => {
     setIsEditMode(false);
