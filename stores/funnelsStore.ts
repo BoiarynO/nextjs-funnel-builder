@@ -143,10 +143,19 @@ export const useFunnelsStore = create<FunnelsStore>((set) => ({
     }));
   },
 
+  /* 
+  setEditingStepId is used to set the id of the step that is being edited
+  input is the id of the step to edit
+  */
   setEditingStepId: (id) => {
     set({ editingStepId: id });
   },
 
+  /* 
+  onDraftStartEdit is used to start the edit of the draft
+  it is used to set the draft to the selected funnel
+  it is used to set the editing step id to the id of the step that is being edited
+  */
   onDraftStartEdit: () => {
     set((state) => {
       const selectedFunnel = state.funnels.find(
@@ -169,6 +178,11 @@ export const useFunnelsStore = create<FunnelsStore>((set) => ({
     });
   },
 
+  /* 
+  onSettingsSave is used to save the settings of the draft
+  it is used to update the funnel in the list
+  it is used to reset the draft and the editing step id
+  */
   onSettingsSave: () => {
     set((state) => {
       const selectedFunnel = state.funnels.find(
@@ -194,12 +208,21 @@ export const useFunnelsStore = create<FunnelsStore>((set) => ({
     });
   },
 
+  /* 
+  onSettingsCancel is used to cancel the edit of the draft
+  it is used to reset the draft and the editing step id
+  */
   onSettingsCancel: () => {
     set(() => {
       return resetDraftState;
     });
   },
 
+  /* 
+  onDraftNameChange is used to change the name of the draft
+  input is the new name of the draft
+  it is used to update the name of the draft
+  */
   onDraftNameChange: (name: string) => {
     set((state) => {
       if (!state.draft) return state;
@@ -209,6 +232,11 @@ export const useFunnelsStore = create<FunnelsStore>((set) => ({
     });
   },
 
+  /* 
+  onDraftTranslationKeyFormatChange is used to change the translation key format of the draft
+  input is the new translation key format of the draft
+  it is used to update the translation key format of the draft
+  */
   onDraftTranslationKeyFormatChange: (format: TranslationKeyFormat) => {
     set((state) => {
       if (!state.draft) return state;
@@ -218,6 +246,11 @@ export const useFunnelsStore = create<FunnelsStore>((set) => ({
     });
   },
 
+  /* 
+  onDraftComponentTypesChange is used to change the component types of the draft
+  input is the new component types of the draft
+  it is used to update the component types of the draft
+  */
   onDraftComponentTypesChange: (types: string[]) => {
     set((state) => {
       if (!state.draft) return state;
@@ -227,6 +260,11 @@ export const useFunnelsStore = create<FunnelsStore>((set) => ({
     });
   },
 
+  /* 
+  onDraftReorder is used to reorder the steps of the draft
+  input is the reordered items of the steps
+  it is used to update the steps of the draft
+  */
   onDraftReorder: (reorderedItems: ReorderItem[]) => {
     set((state) => {
       if (!state.draft) return state;

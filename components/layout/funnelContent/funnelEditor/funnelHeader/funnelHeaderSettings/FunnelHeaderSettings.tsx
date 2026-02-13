@@ -5,7 +5,6 @@ import { useState } from "react";
 import Button from "@/components/ui/button/Button";
 import Dropdown from "@/components/ui/dropdown/Dropdown";
 import Input from "@/components/ui/input/Input";
-import type { TranslationKeyFormat } from "@/types/funnel";
 import DeleteIcon from "@/assets/icons/delete.svg";
 import {
   useFunnelsStore,
@@ -14,14 +13,9 @@ import {
   selectDraftTranslationKeyFormat,
   selectDraftComponentTypes,
 } from "@/stores/funnelsStore";
+import { TRANSLATION_FORMATS } from "@/utils/variables";
 
 import styles from "./FunnelHeaderSettings.module.css";
-
-const TRANSLATION_FORMATS: TranslationKeyFormat[] = [
-  "camelCase",
-  "snake_case",
-  "kebab-case",
-];
 
 const FunnelHeaderSettings = () => {
   const selectedFunnel = useFunnelsStore(selectSelectedFunnel);

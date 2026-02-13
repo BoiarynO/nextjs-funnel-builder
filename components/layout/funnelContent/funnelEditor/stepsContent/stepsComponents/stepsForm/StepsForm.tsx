@@ -1,9 +1,12 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState } from "react";
 
 import type { Funnel, Step, TranslationKeyFormat } from "@/types/funnel";
-import { DEFAULT_COMPONENT_TYPES } from "@/utils/variables";
+import {
+  DEFAULT_COMPONENT_TYPES,
+  TRANSLATION_FORMATS,
+} from "@/utils/variables";
 import { formatTranslationKey } from "@/utils/formatting/formatTranslationKey";
 import { MAX_QUESTIONS_PER_FUNNEL } from "@/utils/config/limits";
 import Button from "@/components/ui/button/Button";
@@ -23,12 +26,6 @@ type StepsFormProps = {
   onClose: () => void;
   initialStep?: Step;
 };
-
-const TRANSLATION_FORMATS: TranslationKeyFormat[] = [
-  "camelCase",
-  "snake_case",
-  "kebab-case",
-];
 
 const StepsForm = ({
   funnel,
@@ -79,87 +76,75 @@ const StepsForm = ({
   const limitReached = funnel.steps.length >= MAX_QUESTIONS_PER_FUNNEL;
   const limitReachedCreate = !isEditMode && limitReached;
 
-  const updateTitle = useCallback(
-    (value: string) => {
-      setTitle(value);
-      setTitleTranslationKey(formatTranslationKey(value, translationKeyFormat));
-    },
-    [translationKeyFormat]
-  );
+  const updateTitle = (value: string) => {
+    setTitle(value);
+    setTitleTranslationKey(formatTranslationKey(value, translationKeyFormat));
+  };
 
-  const updateSubtitle = useCallback(
-    (value: string) => {
-      setSubtitle(value);
-      setSubtitleTranslationKey(
-        formatTranslationKey(value, translationKeyFormat)
-      );
-    },
-    [translationKeyFormat]
-  );
+  const updateSubtitle = (value: string) => {
+    setSubtitle(value);
+    setSubtitleTranslationKey(
+      formatTranslationKey(value, translationKeyFormat)
+    );
+  };
 
-  const handleFormatChange = useCallback(
-    (value: TranslationKeyFormat) => {
-      setTranslationKeyFormat(value);
-      setTitleTranslationKey(formatTranslationKey(title, value));
-      setSubtitleTranslationKey(formatTranslationKey(subtitle, value));
-      setPoints((prev) =>
-        prev.map((p) => ({
-          ...p,
-          pointTranslationKey: formatTranslationKey(p.commonPoint, value),
-        }))
-      );
-    },
-    [title, subtitle]
-  );
+  const handleFormatChange = (value: TranslationKeyFormat) => {
+    setTranslationKeyFormat(value);
+    setTitleTranslationKey(formatTranslationKey(title, value));
+    setSubtitleTranslationKey(formatTranslationKey(subtitle, value));
+    setPoints((prev) =>
+      prev.map((p) => ({
+        ...p,
+        pointTranslationKey: formatTranslationKey(p.commonPoint, value),
+      }))
+    );
+  };
 
-  const updatePoint = useCallback(
-    (index: number, commonPoint: string) => {
-      setPoints((prev) => {
-        const next = [...prev];
-        next[index] = {
-          ...next[index],
+  const updatePoint = (index: number, commonPoint: string) => {
+    setPoints((prev) => {
+      const next = [...prev];
+      next[index] = {
+        ...next[index],
+        commonPoint,
+        pointTranslationKey: formatTranslationKey(
           commonPoint,
-          pointTranslationKey: formatTranslationKey(
-            commonPoint,
-            translationKeyFormat
-          ),
-        };
-        return next;
-      });
-    },
-    [translationKeyFormat]
-  );
+          translationKeyFormat
+        ),
+      };
+      return next;
+    });
+  };
 
-  const setPointTranslationKey = useCallback((index: number, value: string) => {
+  const setPointTranslationKey = (index: number, value: string) => {
     setPoints((prev) => {
       const next = [...prev];
       next[index] = { ...next[index], pointTranslationKey: value };
       return next;
     });
-  }, []);
+  };
 
-  const addPoint = useCallback(() => {
+  const addPoint = () => {
     setPoints((prev) => [
       ...prev,
       { commonPoint: "", pointTranslationKey: "" },
     ]);
-  }, []);
+  };
 
-  const removePoint = useCallback((index: number) => {
+  const removePoint = (index: number) => {
     setPoints((prev) => {
       if (prev.length <= 1) return prev;
       return prev.filter((_, i) => i !== index);
     });
-  }, []);
+  };
 
-  const handlePointsReorder = useCallback((reordered: ReorderItem[]) => {
+  const handlePointsReorder = (reordered: ReorderItem[]) => {
     setPoints((prev) => {
       const next = reordered
         .map((item) => prev[Number(item.id)])
         .filter(Boolean);
       return next.length > 0 ? next : prev;
     });
-  }, []);
+  };
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
