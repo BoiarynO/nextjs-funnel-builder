@@ -39,6 +39,7 @@ const StepsList = ({
           return (
             <div key={step.id} className={styles.editFormWrap}>
               <StepsForm
+                key={editingStep.id}
                 funnel={funnel}
                 onUpdateFunnel={onUpdateFunnel}
                 onClose={() => onEditStep(null)}

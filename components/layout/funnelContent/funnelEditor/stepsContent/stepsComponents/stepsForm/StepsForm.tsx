@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback } from "react";
+
 import type { Funnel, Step, TranslationKeyFormat } from "@/types/funnel";
 import { formatTranslationKey } from "@/utils/formatTranslationKey";
 import { MAX_QUESTIONS_PER_FUNNEL } from "@/config/limits";
@@ -9,6 +10,7 @@ import Input from "@/components/ui/input/Input";
 import ReorderList, {
   type ReorderItem,
 } from "@/components/ui/reorderList/ReorderList";
+
 import styles from "./StepsForm.module.css";
 
 type FormPoint = { commonPoint: string; pointTranslationKey: string };
@@ -60,24 +62,6 @@ const StepsForm = ({
   });
   const [isPointsReorderMode, setIsPointsReorderMode] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (!initialStep) return;
-    setComponentType(initialStep.componentType);
-    setTranslationKeyFormat(initialStep.translationKeyFormat ?? "camelCase");
-    setTitle(initialStep.commonTitle);
-    setSubtitle(initialStep.commonSubtitle);
-    setTitleTranslationKey(initialStep.titleTranslationKey);
-    setSubtitleTranslationKey(initialStep.subtitleTranslationKey);
-    setPoints(
-      initialStep.commonPoints.length > 0
-        ? initialStep.commonPoints.map((cp, i) => ({
-            commonPoint: cp,
-            pointTranslationKey: initialStep.pointsTranslationKeys[i] ?? "",
-          }))
-        : [{ commonPoint: "", pointTranslationKey: "" }]
-    );
-  }, [initialStep?.id]);
 
   const limitReached = funnel.steps.length >= MAX_QUESTIONS_PER_FUNNEL;
   const limitReachedCreate = !isEditMode && limitReached;
