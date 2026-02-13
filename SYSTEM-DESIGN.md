@@ -1,15 +1,15 @@
-# Funnel Builder — System Design (Iteration 1)
+# Funnel Builder — System Design
 
 ## 1. Goal
 
-Create a small web app that allows managers to:
+A small web app that allows managers to:
 
-* Create funnels
-* Add and reorder steps (steps)
+* Create funnels (with name, translation key format, component types)
+* Add, edit, reorder, and delete steps
 * Store funnels locally (localStorage)
-* Export funnel data later as JSON (future iteration)
+* Export funnel data as JSON
 
-This is **frontend-only** in the first iteration.
+The app is **frontend-only** (no backend).
 
 ---
 
@@ -17,408 +17,244 @@ This is **frontend-only** in the first iteration.
 
 Client-side only:
 
-Next.js app
-↓
+```
+Next.js App (App Router)
+    ↓
 React components
-↓
-Local state (React state)
-↓
-Persistence in localStorage
-
-No backend yet.
+    ↓
+Zustand store (funnelsStore)
+    ↓
+Persistence in localStorage (utils/funnelsStorage)
+```
 
 ---
 
-## 3. Pages
+## 3. Routes (App Router)
 
 ### 3.1 Landing Page `/`
 
-Purpose:
-
-* Explain what the project does
-* Button: **"Go to My Funnels"**
-
-UI:
-
-* Title
-* Short description
-* Button → `/funnels`
-
----
+* **File:** `app/page.tsx`
+* **Purpose:** Explain the project; link to funnels.
+* **UI:** Title, short description, button "Go to My Funnels" → `/funnels`.
+* **Component:** `components/views/landing/Landing.tsx`
 
 ### 3.2 Funnels Page `/funnels`
 
-Layout:
+* **File:** `app/funnels/page.tsx`
+* **Layout:**
 
 ```
--------------------------------------
-| Sidebar | Funnel Editor           |
-|         |                         |
-| Funnels | Steps / Form        |
--------------------------------------
+-----------------------------------------
+| Sidebar           | Main content      |
+| - Funnels list    | CreateFunnelForm  |
+| - Create funnel   |   OR              |
+|                   | FunnelContent     |
+|                   |   (FunnelEditor)  |
+-----------------------------------------
 ```
 
-Sidebar:
-
-* List of funnels
-* Button: `+ Create funnel`
-
-Main area:
-
-* If no funnel selected → empty state
-* If creating funnel → creation form
-* If funnel selected → steps list
+* **Sidebar:** List of funnels, selection, "Create funnel" button.
+* **Main area:** If `isCreatingFunnel` → `CreateFunnelForm`; else → `FunnelContent` (empty state or `FunnelEditor` with steps).
+* **Component:** `components/views/funnels/Funnels.tsx`
 
 ---
 
 ## 4. Data Model
 
-### 4.1 Funnel Structure
+### 4.1 Funnel
+
+**File:** `types/funnel.ts`
 
 ```ts
+type TranslationKeyFormat = "camelCase" | "snake_case" | "kebab-case";
+
 type Funnel = {
-  id: string
-  name: string
-  steps: Step[]
-}
+  id: string;
+  name: string;
+  translationKeyFormat?: TranslationKeyFormat;
+  componentTypes?: string[];
+  steps: Step[];
+};
 ```
 
-### 4.2 Step Structure
+### 4.2 Step
 
 ```ts
 type Step = {
-  id: string
-  componentType: "singleSelect" | "multiselect"
-  commonTitle: string
-  commonSubtitle: string
-  commonPoints: string[]
-}
+  id: string;
+  componentType: string | null;
+  translationKeyFormat?: TranslationKeyFormat;
+  commonTitle: string;
+  commonSubtitle: string;
+  titleTranslationKey: string;
+  subtitleTranslationKey: string;
+  commonPoints: string[];
+  pointsTranslationKeys: string[];
+};
 ```
 
 ---
 
-## 5. localStorage Design
+## 5. localStorage
 
-Key:
-
-```
-funnels_storage_v1
-```
-
-Structure:
-
-```json
-{
-  "funnels": [
-    {
-      "id": "funnel_1",
-      "name": "Registration Funnel",
-      "steps": []
-    }
-  ]
-}
-```
+* **Key:** `funnels_storage_v1`
+* **Value:** JSON array of `Funnel[]` (not wrapped in `{ funnels: [...] }`).
+* **API:** `utils/funnelsStorage.ts` — `loadFunnels()`, `saveFunnels(funnels)`.
 
 ---
 
-## 6. State Management Strategy (Iteration 1)
+## 6. State Management (Zustand)
 
-Use:
+**Store:** `stores/funnelsStore.ts`
 
-* `useState`
-* `useEffect`
-* simple helper functions
+**State:**
 
-No Redux / Effector needed yet.
+* `funnels: Funnel[]`
+* `selectedFunnelId: string | null`
+* `isCreatingFunnel: boolean`
 
-Main state on Funnels page:
+**Actions:**
 
-```ts
-const [funnels, setFunnels] = useState<Funnel[]>([])
-const [selectedFunnelId, setSelectedFunnelId] = useState<string | null>(null)
-```
+* `initialize()` — load from localStorage, optionally select first funnel
+* `selectFunnel(funnel)` — set selected funnel, clear create mode
+* `startCreateFunnel()` — set create mode (respects `MAX_FUNNELS`)
+* `createFunnel(newFunnel)` — add funnel, select it, clear create mode
+* `deleteFunnel(id)` — remove funnel, adjust selection
+* `updateFunnel(updatedFunnel)` — replace funnel by id
 
----
-
-## 7. Components Structure
-
-### Pages
-
-```
-/pages
-  index.tsx
-  funnels.tsx
-```
+**Persistence:** A store subscriber calls `saveFunnels(state.funnels)` whenever `funnels` changes.
 
 ---
 
-### Components (Folder-Based Structure)
-
-All components should be grouped by feature and placed in their own folders.
-
-Rule:
-
-* Each component must have its own folder.
-* Each folder must contain:
-
-  * Component file
-  * Styles file
-
-Example structure:
+## 7. Folder Structure (Current)
 
 ```
+/app
+  layout.tsx
+  page.tsx                    # Landing
+  funnels/
+    page.tsx                  # Funnels view
+  uitest/
+    page.tsx                  # UI component tests
+
 /components
+  /views
+    landing/Landing.tsx
+    funnels/Funnels.tsx
   /layout
-    Layout.tsx
-    Layout.module.scss
+    sidebarFunnels/           # Sidebar + FunnelsList, FunnelsListItem
+    createFunnelForm/CreateFunnelForm.tsx
+    funnelContent/FunnelContent.tsx
+    funnelContent/funnelEditor/
+      FunnelEditor.tsx
+      funnelTitleRow/
+      stepsReorderSection/
+      stepsContent/
+        stepsList/
+        stepsComponents/
+          stepsForm/
+          stepItem/
+            details/
+        addStepBlock/
+      buttonDownloadFunnelJson/
+    header/
+  /ui
+    button/Button.tsx
+    input/Input.tsx
+    heading/Heading.tsx
+    linkButton/LinkButton.tsx
+    dropdown/Dropdown.tsx
+    radioButton/RadioButton.tsx
+    reorderList/ReorderList.tsx
 
-  /sidebarFunnels
-    SidebarFunnels.tsx
-    SidebarFunnels.module.scss
-
-  /funnelEditor
-    FunnelEditor.tsx
-    FunnelEditor.module.scss
-
-  /funnelForm
-    FunnelForm.tsx
-    FunnelForm.module.scss
-
-  /stepForm
-    StepForm.tsx
-    StepForm.module.scss
-
-  /stepsList
-    StepsList.tsx
-    StepsList.module.scss
-
-  /stepItem
-    StepItem.tsx
-    StepItem.module.scss
-```
-
-Naming conventions:
-
-* Folder name: camelCase
-* Component name: PascalCase
-* Styles: `ComponentName.module.scss`
-
-Optional improvement (later):
-If a component grows, the folder may also include:
-
-* types.ts
-* constants.ts
-* hooks.ts
-* index.ts (barrel export)
-
-## 8. Component Responsibilities
-
-### SidebarFunnels
-
-Responsibilities:
-
-* Show list of funnels
-* Select funnel
-* Create funnel button
-
-Props:
-
-```
-funnels
-selectedFunnelId
-onSelect
-onCreate
-```
-
----
-
-### FunnelEditor
-
-Responsibilities:
-
-* Show funnel name
-* Show steps
-* Add step button
-
-Props:
-
-```
-funnel
-onAddStep
-onReorder
-```
-
----
-
-### FunnelForm
-
-Responsibilities:
-
-* Input funnel name
-* Button "Add Step"
-
-State:
-
-```
-name
-steps[]
-```
-
-Button "Add Step" disabled until name is filled.
-
----
-
-### StepForm
-
-Responsibilities:
-
-* componentType dropdown
-* step input
-* points input
-* submit button
-
-Submit:
-Push object into funnel.steps
-
----
-
-### StepsList
-
-Responsibilities:
-
-* Show all steps
-* Drag and drop (future iteration)
-
----
-
-## 9. User Flow
-
-### Creating Funnel
-
-1. Open Funnels page
-2. Click **Create Funnel**
-3. Enter name
-4. Button "Add Step" becomes active
-5. Fill step form
-6. Click "Add"
-7. Step appears in list
-8. Funnel saved to localStorage
-
----
-
-### Selecting Funnel
-
-1. Click funnel in sidebar
-2. Load steps
-3. Render editor
-
----
-
-## 10. Persistence Logic
-
-On app load:
-
-```
-loadFunnelsFromStorage()
-setFunnels()
-```
-
-On funnels change:
-
-```
-saveFunnelsToStorage(funnels)
-```
-
----
-
-## 11. Utility Functions
-
-### storage.ts
-
-Functions:
-
-```
-loadFunnels()
-saveFunnels(funnels)
-createFunnel()
-addStep()
-```
-
----
-
-## 12. Folder Structure (Recommended)
-
-```
-/pages
-  index.tsx
-  funnels.tsx
-
-/components
-  SidebarFunnels
-  FunnelEditor
-  StepForm
-  StepsList
+/stores
+  funnelsStore.ts
 
 /utils
-  storage.ts
+  funnelsStorage.ts
+  config/limits.ts            # MAX_FUNNELS, MAX_QUESTIONS_PER_FUNNEL
+  variables.ts                # DEFAULT_COMPONENT_TYPES
+  formatting/formatTranslationKey.ts
 
 /types
   funnel.ts
 ```
 
----
-
-## 13. Validation Rules (Iteration 1)
-
-Funnel:
-
-* Name required
-* Max 2 funnels (local constraint)
-
-Step:
-
-* Step required
-* At least 1 answer
+Naming: folder camelCase; component PascalCase; styles `ComponentName.module.css` or `.module.scss`.
 
 ---
 
-## 14. Future Iterations
+## 8. Component Responsibilities (Summary)
 
-Planned:
+| Component | Role |
+|-----------|------|
+| **SidebarFunnels** | Funnels list, selection, "Create funnel" (uses store) |
+| **CreateFunnelForm** | Name input, validation, create funnel via store (max funnels from limits) |
+| **FunnelContent** | Resolve selected funnel; render empty state or `FunnelEditor` |
+| **FunnelEditor** | Funnel name/edit, reorder steps, steps list, add step, download JSON; uses drafts for edit mode |
+| **StepsContent** | Steps list + add-step block + step form |
+| **StepsForm** | Step fields (type, title, subtitle, points, translation keys); add/update step |
+| **StepItem** | Single step display/edit; details in `Details` |
+| **StepsList** | List of step items (e.g. with reorder) |
+| **ReorderList** | Generic drag-and-drop reorder (used for steps) |
+| **ButtonDownloadFunnelJson** | Export selected funnel as JSON file |
 
-Iteration 2:
+---
 
-* Drag and drop reorder
-* Delete step
+## 9. User Flows
 
-Iteration 3:
+### Create funnel
 
-* Export JSON button
+1. Open `/funnels`.
+2. Click "Create funnel" (if under `MAX_FUNNELS`).
+3. Enter name in `CreateFunnelForm`, submit.
+4. New funnel is created and selected; main area shows `FunnelEditor`.
+5. Add steps in editor; changes are persisted via store → localStorage.
 
-Iteration 4:
+### Select funnel
 
-* Templates for funnels
+1. Click a funnel in the sidebar.
+2. Store updates `selectedFunnelId`; `FunnelContent` renders `FunnelEditor` for that funnel.
 
-Iteration 5:
+### Edit funnel / steps
+
+1. In `FunnelEditor`, edit name/settings or steps (draft state).
+2. Save updates via `updateFunnel`; subscriber persists to localStorage.
+3. Steps can be reordered via `ReorderList`; order is part of `funnel.steps`.
+
+### Export
+
+1. With a funnel selected, use "Download JSON" in `FunnelEditor`.
+2. Funnel data is exported as a JSON file.
+
+---
+
+## 10. Persistence
+
+* **On load:** Funnels page calls `useFunnelsStore.getState().initialize()` in `useEffect`; `initialize()` uses `loadFunnels()` and optionally sets first funnel as selected.
+* **On change:** `useFunnelsStore.subscribe` writes `state.funnels` to localStorage via `saveFunnels(state.funnels)` whenever `funnels` changes.
+
+---
+
+## 11. Limits and Config
+
+* **File:** `utils/config/limits.ts`
+* `MAX_FUNNELS` — max number of funnels (e.g. 3).
+* `MAX_QUESTIONS_PER_FUNNEL` — max steps per funnel (e.g. 10).
+
+---
+
+## 12. Validation (Current)
+
+* **Funnel:** Name required; total funnels ≤ `MAX_FUNNELS`.
+* **Step:** Required fields per `Step` type; step count ≤ `MAX_QUESTIONS_PER_FUNNEL` where enforced.
+
+---
+
+## 13. Future / Nice-to-Have
 
 * Backend sync
-
----
-
-## 15. Definition of Done (Iteration 1)
-
-App allows:
-
-* Create funnel
-* Add steps
-* Persist in localStorage
-* Reload page without data loss
-* Switch between funnels
-
----
-
-## 16. Nice-to-Have Later
-
+* Funnel templates
 * Autosave indicator
 * Duplicate funnel
 * Preview funnel flow

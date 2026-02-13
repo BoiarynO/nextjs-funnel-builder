@@ -1,36 +1,70 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Funnel Builder
+
+A small Next.js web app for creating and managing funnels: add steps, reorder them, and export funnel data as JSON. All data is stored in the browser (localStorage); no backend required.
+
+## Features
+
+* **Landing page** (`/`) — intro and link to funnels
+* **Funnels page** (`/funnels`) — sidebar with funnel list + main area for create/edit
+* Create funnels (name, translation key format, component types)
+* Add, edit, reorder, and delete steps
+* Persist funnels in localStorage (auto-save on change)
+* Export funnel as JSON file
+* Limits: configurable max funnels and max steps per funnel
+
+## Tech Stack
+
+* **Next.js 16** (App Router)
+* **React 19**
+* **Zustand** — global state for funnels and selection
+* **TypeScript**
+* **CSS Modules** / **Sass** / **Tailwind** for styling
 
 ## Getting Started
 
-First, run the development server:
+Install dependencies:
+
+```bash
+npm install
+# or yarn / pnpm / bun
+```
+
+Run the dev server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000). Use "Go to My Funnels" to open the funnels view.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Scripts
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Script   | Description        |
+|----------|--------------------|
+| `npm run dev`   | Start development server |
+| `npm run build` | Production build   |
+| `npm run start` | Start production server |
+| `npm run lint`  | Run ESLint         |
+
+## Project Structure (Overview)
+
+| Path | Description |
+|------|-------------|
+| `app/` | App Router pages (landing, funnels, uitest) |
+| `components/` | UI and layout components (`views/`, `layout/`, `ui/`) |
+| `stores/` | Zustand store for funnels state |
+| `utils/` | Storage, limits, formatting helpers |
+| `types/` | Shared TypeScript types (e.g. Funnel, Step) |
+| `docs/` | Documentation mirroring source structure |
+
+See **SYSTEM-DESIGN.md** for architecture, data model, and component responsibilities.
+
+## Documentation
+
+* **SYSTEM-DESIGN.md** — system design, routes, data model, state, folder structure
+* **docs/** — per-module docs; structure mirrors the project (e.g. `docs/stores/funnelsStore.md`)
 
 ## Learn More
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+* [Next.js Documentation](https://nextjs.org/docs)
+* [Zustand](https://github.com/pmndrs/zustand)
