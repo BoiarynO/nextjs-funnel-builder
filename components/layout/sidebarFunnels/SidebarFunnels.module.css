@@ -45,10 +45,6 @@
   fill: var(--color-primary-600);
 }
 
-/* .deleteButton:hover {
-  background-color: #fee2e2;
-} */
-
 .deleteButtonIcon {
   width: 0.875rem;
   height: 0.875rem;

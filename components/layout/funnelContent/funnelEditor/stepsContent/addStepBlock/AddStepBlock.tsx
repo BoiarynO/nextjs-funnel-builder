@@ -36,12 +36,7 @@ const AddStepBlock = ({
 
   return (
     <div className={styles.addRow}>
-      <Button
-        type="button"
-        outlined
-        onClick={onOpenForm}
-        disabled={limitReached}
-      >
+      <Button type="button" filled onClick={onOpenForm} disabled={limitReached}>
         Add Step
       </Button>
       {limitReached && (
