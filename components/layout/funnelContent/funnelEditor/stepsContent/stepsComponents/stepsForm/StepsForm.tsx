@@ -10,6 +10,7 @@ import Input from "@/components/ui/input/Input";
 import ReorderList, {
   type ReorderItem,
 } from "@/components/ui/reorderList/ReorderList";
+import DeleteIcon from "@/assets/icons/delete.svg";
 
 import styles from "./StepsForm.module.css";
 
@@ -132,6 +133,13 @@ const StepsForm = ({
     ]);
   }, []);
 
+  const removePoint = useCallback((index: number) => {
+    setPoints((prev) => {
+      if (prev.length <= 1) return prev;
+      return prev.filter((_, i) => i !== index);
+    });
+  }, []);
+
   const handlePointsReorder = useCallback((reordered: ReorderItem[]) => {
     setPoints((prev) => {
       const next = reordered
@@ -172,9 +180,7 @@ const StepsForm = ({
     const updatedFunnel: Funnel = isEditMode
       ? {
           ...funnel,
-          steps: funnel.steps.map((s) =>
-            s.id === stepId ? updatedStep : s
-          ),
+          steps: funnel.steps.map((s) => (s.id === stepId ? updatedStep : s)),
         }
       : {
           ...funnel,
@@ -264,7 +270,7 @@ const StepsForm = ({
           <label className={styles.sectionLabel}>Points</label>
           <Button
             type="button"
-            variant="outlined"
+            outlined
             onClick={() => setIsPointsReorderMode((prev) => !prev)}
           >
             {isPointsReorderMode ? "Edit points" : "Reorder points"}
@@ -279,20 +285,39 @@ const StepsForm = ({
           <>
             {points.map((point, index) => (
               <div key={index} className={styles.pointGroup}>
-                <Input
-                  value={point.commonPoint}
-                  onChange={(e) => updatePoint(index, e.target.value)}
-                  placeholder="commonPoint"
-                />
-                <Input
-                  value={point.pointTranslationKey}
-                  onChange={(e) => setPointTranslationKey(index, e.target.value)}
-                  placeholder="pointTranslationKey"
-                  className={styles.inputTranslationKey}
-                />
+                <div className={styles.pointRow}>
+                  <div className={styles.pointInputs}>
+                    <Input
+                      value={point.commonPoint}
+                      onChange={(e) => updatePoint(index, e.target.value)}
+                      placeholder="commonPoint"
+                    />
+                    <Input
+                      value={point.pointTranslationKey}
+                      onChange={(e) =>
+                        setPointTranslationKey(index, e.target.value)
+                      }
+                      placeholder="pointTranslationKey"
+                      className={styles.inputTranslationKey}
+                    />
+                  </div>
+                  <Button
+                    type="button"
+                    outlined
+                    onClick={() => removePoint(index)}
+                    disabled={points.length <= 1}
+                    className={styles.pointDeleteButton}
+                    aria-label={`Delete point ${index + 1}`}
+                  >
+                    <DeleteIcon
+                      className={styles.pointDeleteIcon}
+                      aria-hidden
+                    />
+                  </Button>
+                </div>
               </div>
             ))}
-            <Button type="button" variant="outlined" onClick={addPoint}>
+            <Button type="button" outlined onClick={addPoint}>
               Add point
             </Button>
           </>

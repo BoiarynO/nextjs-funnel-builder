@@ -61,8 +61,36 @@
   background-color: #f9fafb;
 }
 
-.pointGroup input {
+.pointRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+
+.pointInputs {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.pointGroup .pointInputs input {
   width: 100%;
+}
+
+.pointDeleteButton {
+  flex-shrink: 0;
+  padding: 0.5rem;
+}
+
+.pointDeleteButton svg {
+  fill: var(--color-primary-600);
+}
+
+.pointDeleteIcon {
+  width: 1.25rem;
+  height: 1.25rem;
 }
 
 .actions {
