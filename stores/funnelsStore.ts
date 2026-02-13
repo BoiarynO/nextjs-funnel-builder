@@ -21,11 +21,12 @@ type FunnelsActions = {
 
 export type FunnelsStore = FunnelsState & FunnelsActions;
 
-export const useFunnelsStore = create<FunnelsStore>((set, get) => ({
+export const useFunnelsStore = create<FunnelsStore>((set) => ({
   funnels: [],
   selectedFunnelId: null,
   isCreatingFunnel: false,
 
+  /* initialize is used to load the funnels from the storage and select the first funnel as default */
   initialize: () => {
     const stored = loadFunnels();
     if (stored.length > 0) {
@@ -36,6 +37,7 @@ export const useFunnelsStore = create<FunnelsStore>((set, get) => ({
     }
   },
 
+  /* selectFunnel is used to select a funnel from the list, view the funnel editor and reset the create funnel mode */
   selectFunnel: (funnel: Funnel) => {
     set({
       selectedFunnelId: funnel.id,
@@ -43,12 +45,19 @@ export const useFunnelsStore = create<FunnelsStore>((set, get) => ({
     });
   },
 
+  /* startCreateFunnel is used to start the create funnel mode */
   startCreateFunnel: () => {
-    const { funnels } = get();
-    if (funnels.length >= MAX_FUNNELS) return;
-    set({ isCreatingFunnel: true });
+    set((state) => {
+      if (state.funnels.length >= MAX_FUNNELS) return state;
+      return { isCreatingFunnel: true };
+    });
   },
 
+  /* 
+  createFunnel is used to create a new funnel and select it.
+  input is a whole new funnel object with all the properties
+  it also resets the create funnel mode 
+  */
   createFunnel: (newFunnel: Funnel) => {
     set((state) => ({
       funnels: [...state.funnels, newFunnel],
@@ -57,6 +66,11 @@ export const useFunnelsStore = create<FunnelsStore>((set, get) => ({
     }));
   },
 
+  /*  
+  deleteFunnel is used to delete a funnel from the list
+  input is the id of the funnel to delete
+  it also adjusts the selected funnel id if the deleted funnel was selected 
+  */
   deleteFunnel: (id: string) => {
     set((state) => {
       const updated = state.funnels.filter((f) => f.id !== id);
@@ -74,6 +88,11 @@ export const useFunnelsStore = create<FunnelsStore>((set, get) => ({
     });
   },
 
+  /* 
+  updateFunnel is used to update a funnel in the list
+  input is the updated funnel object with all the properties
+  it also updates the funnel in the list
+  */
   updateFunnel: (updatedFunnel: Funnel) => {
     set((state) => ({
       funnels: state.funnels.map((f) =>
@@ -83,6 +102,11 @@ export const useFunnelsStore = create<FunnelsStore>((set, get) => ({
   },
 }));
 
+/* 
+subscribe is used to save the funnels to the storage whenever the funnels state changes
+it is a subscriber that runs whenever the funnels state changes
+it saves the funnels to the storage
+*/
 useFunnelsStore.subscribe((state, prevState) => {
   if (state.funnels !== prevState.funnels) {
     saveFunnels(state.funnels);

@@ -25,14 +25,15 @@ export function loadFunnels(): Funnel[] {
 }
 
 export function saveFunnels(funnels: Funnel[]): void {
+  console.log("saving funnels to storage", funnels);
   if (typeof window === "undefined") {
     return;
   }
 
   try {
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify(funnels));
+    console.log("saved funnels to storage");
   } catch {
     // Ignore write errors for now
   }
 }
-

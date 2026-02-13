@@ -7,10 +7,10 @@ import styles from "./SidebarFunnels.module.css";
 import FunnelsList from "./funnelsList/FunnelsList";
 
 const SidebarFunnels = () => {
-  const funnels = useFunnelsStore((s) => s.funnels);
+  const canCreateFunnel = useFunnelsStore(
+    (s) => s.funnels.length < MAX_FUNNELS
+  );
   const startCreateFunnel = useFunnelsStore((s) => s.startCreateFunnel);
-
-  const canCreateFunnel = funnels.length < MAX_FUNNELS;
 
   return (
     <div className={styles.container}>
