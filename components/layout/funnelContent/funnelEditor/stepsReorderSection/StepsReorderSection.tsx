@@ -1,24 +1,23 @@
 "use client";
 
-import type { ReorderItem } from "@/components/ui/reorderList/ReorderList";
 import ReorderList from "@/components/ui/reorderList/ReorderList";
 import Heading from "@/components/ui/heading/Heading";
+import { useFunnelsStore, selectSelectedFunnel } from "@/stores/funnelsStore";
 
 import styles from "./StepsReorderSection.module.css";
 
-type StepsReorderSectionProps = {
-  items: ReorderItem[];
-  onReorder: (reorderedItems: ReorderItem[]) => void;
-};
+const StepsReorderSection = () => {
+  const draft = useFunnelsStore((s) => s.draft);
+  const selectedFunnel = useFunnelsStore(selectSelectedFunnel);
+  const onDraftReorder = useFunnelsStore((s) => s.onDraftReorder);
 
-const StepsReorderSection = ({
-  items,
-  onReorder,
-}: StepsReorderSectionProps) => {
+  const steps = draft?.steps ?? selectedFunnel?.steps ?? [];
+  const items = steps.map((step) => ({ id: step.id, label: step.commonTitle }));
+
   const listContent = !items.length ? (
     <p className={styles.emptyText}>No steps yet.</p>
   ) : (
-    <ReorderList items={items} onChangeOrder={onReorder} />
+    <ReorderList items={items} onChangeOrder={onDraftReorder} />
   );
 
   return (

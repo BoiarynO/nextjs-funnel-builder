@@ -1,10 +1,19 @@
+"use client";
+
 import { useState } from "react";
 
 import Button from "@/components/ui/button/Button";
 import Dropdown from "@/components/ui/dropdown/Dropdown";
 import Input from "@/components/ui/input/Input";
-import { Step, TranslationKeyFormat } from "@/types/funnel";
+import type { TranslationKeyFormat } from "@/types/funnel";
 import DeleteIcon from "@/assets/icons/delete.svg";
+import {
+  useFunnelsStore,
+  selectSelectedFunnel,
+  selectDisplayName,
+  selectDraftTranslationKeyFormat,
+  selectDraftComponentTypes,
+} from "@/stores/funnelsStore";
 
 import styles from "./FunnelHeaderSettings.module.css";
 
@@ -14,28 +23,22 @@ const TRANSLATION_FORMATS: TranslationKeyFormat[] = [
   "kebab-case",
 ];
 
-export type FunnelHeaderSettingsProps = {
-  value: string;
-  steps: Step[];
-  onNameChange: (value: string) => void;
-  onSave: () => void;
-  onCancel: () => void;
-  translationKeyFormat: TranslationKeyFormat;
-  componentTypes: string[];
-  onTranslationKeyFormatChange: (format: TranslationKeyFormat) => void;
-  onComponentTypesChange: (types: string[]) => void;
-};
-const FunnelHeaderSettings = ({
-  value,
-  steps,
-  onNameChange,
-  onSave,
-  onCancel,
-  translationKeyFormat,
-  componentTypes,
-  onTranslationKeyFormatChange,
-  onComponentTypesChange,
-}: FunnelHeaderSettingsProps) => {
+const FunnelHeaderSettings = () => {
+  const selectedFunnel = useFunnelsStore(selectSelectedFunnel);
+  const displayName = useFunnelsStore(selectDisplayName);
+  const translationKeyFormat = useFunnelsStore(selectDraftTranslationKeyFormat);
+  const componentTypes = useFunnelsStore(selectDraftComponentTypes);
+  const onDraftNameChange = useFunnelsStore((s) => s.onDraftNameChange);
+  const onSettingsSave = useFunnelsStore((s) => s.onSettingsSave);
+  const onSettingsCancel = useFunnelsStore((s) => s.onSettingsCancel);
+  const onDraftTranslationKeyFormatChange = useFunnelsStore(
+    (s) => s.onDraftTranslationKeyFormatChange
+  );
+  const onDraftComponentTypesChange = useFunnelsStore(
+    (s) => s.onDraftComponentTypesChange
+  );
+
+  const steps = selectedFunnel?.steps ?? [];
   const [newComponentType, setNewComponentType] = useState("");
 
   const usedComponentTypes = new Set(
@@ -46,13 +49,13 @@ const FunnelHeaderSettings = ({
     const trimmed = newComponentType.trim();
     if (!trimmed) return;
     if (componentTypes.includes(trimmed)) return;
-    onComponentTypesChange([...componentTypes, trimmed]);
+    onDraftComponentTypesChange([...componentTypes, trimmed]);
     setNewComponentType("");
   };
 
   const handleRemoveComponentType = (type: string) => {
     if (usedComponentTypes.has(type)) return;
-    onComponentTypesChange(componentTypes.filter((t) => t !== type));
+    onDraftComponentTypesChange(componentTypes.filter((t) => t !== type));
   };
   const handleNewTypeKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter") {
@@ -65,14 +68,14 @@ const FunnelHeaderSettings = ({
     <div className={styles.editContainer}>
       <div className={styles.row}>
         <Input
-          value={value}
-          onChange={(e) => onNameChange(e.target.value)}
+          value={displayName}
+          onChange={(e) => onDraftNameChange(e.target.value)}
           className={styles.titleInput}
         />
-        <Button type="button" onClick={onSave}>
+        <Button type="button" onClick={onSettingsSave}>
           Save
         </Button>
-        <Button type="button" variant="outlined" onClick={onCancel}>
+        <Button type="button" outlined onClick={onSettingsCancel}>
           Cancel
         </Button>
       </div>
@@ -89,7 +92,7 @@ const FunnelHeaderSettings = ({
                 <Button
                   key={format}
                   type="button"
-                  onClick={() => onTranslationKeyFormatChange(format)}
+                  onClick={() => onDraftTranslationKeyFormatChange(format)}
                 >
                   {format}
                 </Button>

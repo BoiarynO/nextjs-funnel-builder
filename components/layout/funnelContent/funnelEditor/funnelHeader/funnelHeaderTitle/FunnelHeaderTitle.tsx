@@ -1,28 +1,29 @@
+"use client";
+
 import Button from "@/components/ui/button/Button";
 import Heading from "@/components/ui/heading/Heading";
 import EditIcon from "@/assets/icons/edit.svg";
+import {
+  useFunnelsStore,
+  selectDisplayName,
+  selectIsFunnelEditDisabled,
+} from "@/stores/funnelsStore";
 
 import styles from "./FunnelHeaderTitle.module.css";
 
-type FunnelHeaderTitleProps = {
-  value: string;
-  isEditDisabled: boolean;
-  onStartEdit: () => void;
-};
+const FunnelHeaderTitle = () => {
+  const displayName = useFunnelsStore(selectDisplayName);
+  const isEditDisabled = useFunnelsStore(selectIsFunnelEditDisabled);
+  const onDraftStartEdit = useFunnelsStore((s) => s.onDraftStartEdit);
 
-const FunnelHeaderTitle = ({
-  value,
-  isEditDisabled,
-  onStartEdit,
-}: FunnelHeaderTitleProps) => {
   return (
     <div className={styles.row}>
       <Heading as="h3" colored>
-        {value}
+        {displayName}
       </Heading>
       <Button
         type="button"
-        onClick={onStartEdit}
+        onClick={onDraftStartEdit}
         disabled={isEditDisabled}
         aria-label="Edit funnel"
       >

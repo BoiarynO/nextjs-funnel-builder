@@ -1,42 +1,51 @@
 "use client";
 
-import type { Funnel } from "@/types/funnel";
+import { useState } from "react";
+
 import Button from "@/components/ui/button/Button";
+import { MAX_QUESTIONS_PER_FUNNEL } from "@/utils/config/limits";
+import { selectSelectedFunnel, useFunnelsStore } from "@/stores/funnelsStore";
 
 import StepsForm from "../stepsComponents/stepsForm/StepsForm";
 
 import styles from "./AddStepBlock.module.css";
 
-type AddStepBlockProps = {
-  funnel: Funnel;
-  isFormOpen: boolean;
-  limitReached: boolean;
-  onOpenForm: () => void;
-  onCloseForm: () => void;
-  onUpdateFunnel: (funnel: Funnel) => void;
-};
+const AddStepBlock = () => {
+  const [isFormOpen, setIsFormOpen] = useState(false);
 
-const AddStepBlock = ({
-  funnel,
-  isFormOpen,
-  limitReached,
-  onOpenForm,
-  onCloseForm,
-  onUpdateFunnel,
-}: AddStepBlockProps) => {
+  const funnel = useFunnelsStore(selectSelectedFunnel);
+  const updateFunnel = useFunnelsStore((s) => s.updateFunnel);
+
+  const handleOpenForm = () => {
+    setIsFormOpen(true);
+  };
+
+  const handleCloseForm = () => {
+    setIsFormOpen(false);
+  };
+
+  if (!funnel) return null;
+
+  const limitReached = funnel?.steps?.length >= MAX_QUESTIONS_PER_FUNNEL;
+
   if (isFormOpen) {
     return (
       <StepsForm
         funnel={funnel}
-        onUpdateFunnel={onUpdateFunnel}
-        onClose={onCloseForm}
+        onUpdateFunnel={updateFunnel}
+        onClose={handleCloseForm}
       />
     );
   }
 
   return (
     <div className={styles.addRow}>
-      <Button type="button" filled onClick={onOpenForm} disabled={limitReached}>
+      <Button
+        type="button"
+        filled
+        onClick={handleOpenForm}
+        disabled={limitReached}
+      >
         Add Step
       </Button>
       {limitReached && (

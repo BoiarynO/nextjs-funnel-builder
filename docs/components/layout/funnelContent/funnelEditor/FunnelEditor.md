@@ -35,13 +35,7 @@ FunnelEditor
 
 ## Props
 
-No props. Component uses `useFunnelEditorDraft` and is rendered only when a funnel is selected (parent: `FunnelContent`).
-
----
-
-## State and Logic (useFunnelEditorDraft)
-
-Draft state and handlers live in `hooks/useFunnelEditorDraft.ts`. The component only calls the hook and renders.
+No props. Component uses `useFunnelsStore` directly. Draft state and handlers live in `stores/funnelsStore.ts`. Child components read from the store via selectors—no prop drilling.
 
 | State / derived       | Type                   | Purpose                                                  |
 |-----------------------|------------------------|----------------------------------------------------------|
@@ -51,13 +45,16 @@ Draft state and handlers live in `hooks/useFunnelEditorDraft.ts`. The component 
 
 ---
 
-## Store Usage
+## Store Usage (funnelsStore)
 
-| Selector / action  | Purpose                                           |
-|--------------------|---------------------------------------------------|
-| `funnels`          | Resolve `selectedFunnel` from `selectedFunnelId`. |
-| `selectedFunnelId` | Know which funnel to edit.                        |
-| `updateFunnel`     | Persist funnel changes on "Save".                 |
+| State / selector / action      | Purpose                                                  |
+|--------------------------------|----------------------------------------------------------|
+| `draft`, `editingStepId`       | Draft state for funnel settings edit mode.               |
+| `selectSelectedFunnel`         | Resolve selected funnel from `funnels` + `selectedFunnelId`. |
+| `selectIsEditMode`             | Derived from `draft !== null`.                           |
+| `selectDisplayName`, `selectReorderItems`, etc. | Derived values for UI.                          |
+| `onDraftStartEdit`, `onSettingsSave`, `onSettingsCancel`, `setEditingStepId` | Draft/settings actions.            |
+| `updateFunnel`                 | Persist funnel changes (inline step edits).              |
 
 ---
 
@@ -65,20 +62,13 @@ Draft state and handlers live in `hooks/useFunnelEditorDraft.ts`. The component 
 
 ### Reset on funnel switch
 
-```ts
-useEffect(() => {
-  setDraft(null);
-  setEditingStepId(null);
-}, [selectedFunnelId]);
-```
-
-When the user selects another funnel in the sidebar, draft and step editing are reset.
+When the user selects another funnel via `selectFunnel`, the store sets `draft: null` and `editingStepId: null`.
 
 ### Edit funnel metadata
 
-- **Start edit:** `onStartEdit` copies current funnel data into draft state. Disabled if a step is being edited (`editingStepId !== null`).
-- **Save:** `onSave` builds an updated `Funnel` from draft and calls `updateFunnel(updated)`; then sets draft to null.
-- **Cancel:** `onCancel` sets draft to null; changes are discarded.
+- **Start edit:** `onDraftStartEdit` copies current funnel data into draft state. Disabled if a step is being edited (`editingStepId !== null`).
+- **Save:** `onSettingsSave` builds an updated `Funnel` from draft and updates the list; then sets draft to null.
+- **Cancel:** `onSettingsCancel` sets draft to null; changes are discarded.
 
 ### Reorder steps (edit mode only)
 
@@ -95,10 +85,10 @@ When the user selects another funnel in the sidebar, draft and step editing are 
 
 | Component                    | Role                                                                                                                             |
 |------------------------------|----------------------------------------------------------------------------------------------------------------------------------|
-| **FunnelTitleRow**           | Shows or edits funnel name, translation format, component types. Receives `isEditMode`, draft values, and callbacks. Uses `steps` to know which component types are in use (cannot delete used types).                                                                                                            |
+| **FunnelHeader**             | Shows `FunnelHeaderTitle` (view) or `FunnelHeaderSettings` (edit). Both read from `useFunnelsStore`—no props. Uses `steps` to know which component types are in use (cannot delete used types). |
 | **ButtonDownloadFunnelJson** | Exports the selected funnel as a JSON file.                                                                                      |
-| **StepsReorderSection**      | Drag-and-drop reorder when `isEditMode`; operates on draft steps via `onDraftReorder`.                                           |
-| **StepsContent**             | Steps list + add step when not in edit mode. Receives `editingStepId` and `onEditStep`; edits steps directly via `updateFunnel`. |
+| **StepsReorderSection**      | Drag-and-drop reorder when `isEditMode`; reads `selectReorderItems` and `onDraftReorder` from `useFunnelsStore`.                 |
+| **StepsContent**             | Steps list + add step when not in edit mode. Reads `editingStepId` and `setEditingStepId` from store; edits steps via `updateFunnel`. |
 
 ---
 
@@ -121,7 +111,7 @@ Store (updateFunnel) → subscriber → saveFunnels → persistence
 
 ## Dependencies
 
-- **Hook:** `useFunnelEditorDraft` (local; encapsulates draft state, handlers, derived values)
+- **Store:** `useFunnelsStore` (draft, editingStepId, selectors: selectSelectedFunnel, selectIsEditMode, selectDisplayName, selectReorderItems, etc.)
 - **Types:** `Funnel`, `Step`, `TranslationKeyFormat` from `@/types/funnel`
 - **Store:** `useFunnelsStore`
 - **Utils:** `DEFAULT_COMPONENT_TYPES` from `@/utils/variables`

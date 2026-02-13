@@ -1,13 +1,35 @@
 import { create } from "zustand";
 
-import type { Funnel } from "@/types/funnel";
+import type { Funnel, Step, TranslationKeyFormat } from "@/types/funnel";
 import { MAX_FUNNELS } from "@/utils/config/limits";
 import { loadFunnels, saveFunnels } from "@/utils/funnelsStorage";
+import { DEFAULT_COMPONENT_TYPES } from "@/utils/variables";
+import { ReorderItem } from "@/components/ui/reorderList/ReorderList";
+
+function reorderSteps(
+  prevSteps: Step[],
+  reorderedItems: ReorderItem[]
+): Step[] {
+  const stepMap = new Map(prevSteps.map((s) => [s.id, s]));
+  return reorderedItems
+    .map((item) => stepMap.get(item.id))
+    .filter((s) => s != null);
+}
+
+type Draft = {
+  name: string;
+  translationKeyFormat: TranslationKeyFormat;
+  componentTypes: string[];
+  steps: Step[];
+};
 
 type FunnelsState = {
   funnels: Funnel[];
   selectedFunnelId: string | null;
   isCreatingFunnel: boolean;
+
+  draft: Draft | null;
+  editingStepId: string | null;
 };
 
 type FunnelsActions = {
@@ -17,14 +39,31 @@ type FunnelsActions = {
   createFunnel: (newFunnel: Funnel) => void;
   deleteFunnel: (id: string) => void;
   updateFunnel: (updatedFunnel: Funnel) => void;
+  // settings via draft
+  setEditingStepId: (id: string | null) => void;
+  onDraftStartEdit: () => void;
+  onDraftNameChange: (name: string) => void;
+  onDraftTranslationKeyFormatChange: (format: TranslationKeyFormat) => void;
+  onDraftComponentTypesChange: (types: string[]) => void;
+  onDraftReorder: (reorderedItems: ReorderItem[]) => void;
+  onSettingsSave: () => void;
+  onSettingsCancel: () => void;
 };
 
 export type FunnelsStore = FunnelsState & FunnelsActions;
+
+const resetDraftState = {
+  draft: null,
+  editingStepId: null,
+};
 
 export const useFunnelsStore = create<FunnelsStore>((set) => ({
   funnels: [],
   selectedFunnelId: null,
   isCreatingFunnel: false,
+
+  draft: null,
+  editingStepId: null,
 
   /* initialize is used to load the funnels from the storage and select the first funnel as default */
   initialize: () => {
@@ -33,6 +72,7 @@ export const useFunnelsStore = create<FunnelsStore>((set) => ({
       set({
         funnels: stored,
         selectedFunnelId: stored[0].id,
+        ...resetDraftState,
       });
     }
   },
@@ -42,6 +82,7 @@ export const useFunnelsStore = create<FunnelsStore>((set) => ({
     set({
       selectedFunnelId: funnel.id,
       isCreatingFunnel: false,
+      ...resetDraftState,
     });
   },
 
@@ -49,7 +90,7 @@ export const useFunnelsStore = create<FunnelsStore>((set) => ({
   startCreateFunnel: () => {
     set((state) => {
       if (state.funnels.length >= MAX_FUNNELS) return state;
-      return { isCreatingFunnel: true };
+      return { isCreatingFunnel: true, ...resetDraftState };
     });
   },
 
@@ -63,6 +104,7 @@ export const useFunnelsStore = create<FunnelsStore>((set) => ({
       funnels: [...state.funnels, newFunnel],
       selectedFunnelId: newFunnel.id,
       isCreatingFunnel: false,
+      ...resetDraftState,
     }));
   },
 
@@ -100,6 +142,102 @@ export const useFunnelsStore = create<FunnelsStore>((set) => ({
       ),
     }));
   },
+
+  setEditingStepId: (id) => {
+    set({ editingStepId: id });
+  },
+
+  onDraftStartEdit: () => {
+    set((state) => {
+      const selectedFunnel = state.funnels.find(
+        (f) => f.id === state.selectedFunnelId
+      );
+      const isFunnelEditDisabled = state.editingStepId !== null;
+      if (!selectedFunnel || isFunnelEditDisabled) return state;
+
+      return {
+        draft: {
+          name: selectedFunnel.name,
+          translationKeyFormat:
+            selectedFunnel.translationKeyFormat ?? "camelCase",
+          componentTypes: selectedFunnel.componentTypes ?? [
+            ...DEFAULT_COMPONENT_TYPES,
+          ],
+          steps: [...selectedFunnel.steps],
+        },
+      };
+    });
+  },
+
+  onSettingsSave: () => {
+    set((state) => {
+      const selectedFunnel = state.funnels.find(
+        (f) => f.id === state.selectedFunnelId
+      );
+      if (!selectedFunnel || !state.draft) return state;
+
+      const updated: Funnel = {
+        ...selectedFunnel,
+        name: state.draft.name,
+        translationKeyFormat: state.draft.translationKeyFormat,
+        componentTypes: state.draft.componentTypes,
+        steps: state.draft.steps,
+      };
+
+      return {
+        funnels: state.funnels.map((f) =>
+          f.id === selectedFunnel.id ? updated : f
+        ),
+        draft: null,
+        editingStepId: null,
+      };
+    });
+  },
+
+  onSettingsCancel: () => {
+    set(() => {
+      return resetDraftState;
+    });
+  },
+
+  onDraftNameChange: (name: string) => {
+    set((state) => {
+      if (!state.draft) return state;
+      return {
+        draft: { ...state.draft, name },
+      };
+    });
+  },
+
+  onDraftTranslationKeyFormatChange: (format: TranslationKeyFormat) => {
+    set((state) => {
+      if (!state.draft) return state;
+      return {
+        draft: { ...state.draft, translationKeyFormat: format },
+      };
+    });
+  },
+
+  onDraftComponentTypesChange: (types: string[]) => {
+    set((state) => {
+      if (!state.draft) return state;
+      return {
+        draft: { ...state.draft, componentTypes: types },
+      };
+    });
+  },
+
+  onDraftReorder: (reorderedItems: ReorderItem[]) => {
+    set((state) => {
+      if (!state.draft) return state;
+      return {
+        draft: {
+          ...state.draft,
+          steps: reorderSteps(state.draft.steps, reorderedItems),
+        },
+      };
+    });
+  },
 }));
 
 /* 
@@ -112,3 +250,32 @@ useFunnelsStore.subscribe((state, prevState) => {
     saveFunnels(state.funnels);
   }
 });
+
+/* Selectors for funnel editor derived state */
+export const selectSelectedFunnel = (s: FunnelsStore) =>
+  s.funnels.find((f) => f.id === s.selectedFunnelId) ?? null;
+
+export const selectIsEditMode = (s: FunnelsStore) => s.draft !== null;
+
+export const selectDisplayName = (s: FunnelsStore) =>
+  s.draft ? s.draft.name : (selectSelectedFunnel(s)?.name ?? "");
+
+export const selectIsFunnelEditDisabled = (s: FunnelsStore) =>
+  s.editingStepId !== null;
+
+export const selectReorderItems = (s: FunnelsStore): ReorderItem[] => {
+  const funnel = selectSelectedFunnel(s);
+  const steps = s.draft ? s.draft.steps : (funnel?.steps ?? []);
+  return steps.map((step) => ({ id: step.id, label: step.commonTitle }));
+};
+
+export const selectDraftTranslationKeyFormat = (
+  s: FunnelsStore
+): TranslationKeyFormat =>
+  s.draft?.translationKeyFormat ??
+  selectSelectedFunnel(s)?.translationKeyFormat ??
+  "camelCase";
+
+export const selectDraftComponentTypes = (s: FunnelsStore): string[] =>
+  s.draft?.componentTypes ??
+  selectSelectedFunnel(s)?.componentTypes ?? [...DEFAULT_COMPONENT_TYPES];
