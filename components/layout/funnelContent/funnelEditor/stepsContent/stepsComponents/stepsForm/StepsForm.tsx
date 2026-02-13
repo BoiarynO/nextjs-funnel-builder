@@ -3,6 +3,7 @@
 import { useState, useCallback } from "react";
 
 import type { Funnel, Step, TranslationKeyFormat } from "@/types/funnel";
+import { DEFAULT_COMPONENT_TYPES } from "@/types/funnel";
 import { formatTranslationKey } from "@/utils/formatTranslationKey";
 import { MAX_QUESTIONS_PER_FUNNEL } from "@/config/limits";
 import Button from "@/components/ui/button/Button";
@@ -37,12 +38,23 @@ const StepsForm = ({
 }: StepsFormProps) => {
   const isEditMode = Boolean(initialStep);
 
-  const [componentType, setComponentType] = useState<Step["componentType"]>(
-    initialStep?.componentType ?? "singleSelect"
-  );
+  const availableComponentTypes =
+    funnel.componentTypes ?? DEFAULT_COMPONENT_TYPES;
+  const hasComponentTypes = availableComponentTypes.length > 0;
+
+  const [componentType, setComponentType] = useState<string | null>(() => {
+    if (initialStep) return initialStep.componentType;
+    if (!hasComponentTypes) return null;
+    const lastStep = funnel.steps[funnel.steps.length - 1];
+    const lastType = lastStep?.componentType;
+    if (lastType && availableComponentTypes.includes(lastType)) return lastType;
+    return availableComponentTypes[0];
+  });
   const [translationKeyFormat, setTranslationKeyFormat] =
     useState<TranslationKeyFormat>(
-      initialStep?.translationKeyFormat ?? "camelCase"
+      initialStep?.translationKeyFormat ??
+        funnel.translationKeyFormat ??
+        "camelCase"
     );
   const [title, setTitle] = useState(initialStep?.commonTitle ?? "");
   const [subtitle, setSubtitle] = useState(initialStep?.commonSubtitle ?? "");
@@ -200,16 +212,21 @@ const StepsForm = ({
     <form className={styles.form} onSubmit={handleSubmit}>
       <div className={styles.field}>
         <label className={styles.label}>Component type</label>
-        <select
-          className={styles.select}
-          value={componentType}
-          onChange={(e) =>
-            setComponentType(e.target.value as Step["componentType"])
-          }
-        >
-          <option value="singleSelect">singleSelect</option>
-          <option value="multiselect">multiselect</option>
-        </select>
+        {hasComponentTypes ? (
+          <select
+            className={styles.select}
+            value={componentType ?? ""}
+            onChange={(e) => setComponentType(e.target.value || null)}
+          >
+            {availableComponentTypes.map((ct) => (
+              <option key={ct} value={ct}>
+                {ct}
+              </option>
+            ))}
+          </select>
+        ) : (
+          <span className={styles.nullValue}>null (no types configured)</span>
+        )}
       </div>
 
       <div className={styles.field}>

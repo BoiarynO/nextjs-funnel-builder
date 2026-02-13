@@ -32,7 +32,7 @@ const Details = ({ step }: { step: Step }) => {
       )}
       <div className={styles.detailRow}>
         <span className={styles.detailLabel}>Component type:</span>
-        <span>{step.componentType}</span>
+        <span>{step.componentType ?? "null"}</span>
       </div>
       <div className={styles.detailRow}>
         <span className={styles.detailLabel}>Translation key format:</span>

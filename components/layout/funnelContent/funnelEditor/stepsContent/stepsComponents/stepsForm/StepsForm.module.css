@@ -93,6 +93,13 @@
   height: 1.25rem;
 }
 
+.nullValue {
+  font-size: 0.875rem;
+  color: #9ca3af;
+  font-style: italic;
+  padding: 0.5rem 0;
+}
+
 .actions {
   display: flex;
   gap: 0.5rem;
