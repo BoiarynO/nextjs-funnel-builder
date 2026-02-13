@@ -19,7 +19,7 @@ const FunnelsList = () => {
     />
   ));
 
-  const emptyState = funnels.length === 0 && (
+  const emptyState = !funnels.length && (
     <p className={styles.emptyState}>Funnels list is empty</p>
   );
 

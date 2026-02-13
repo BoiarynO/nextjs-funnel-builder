@@ -83,12 +83,8 @@ export const useFunnelsStore = create<FunnelsStore>((set, get) => ({
   },
 }));
 
-// Persist funnels to localStorage when funnels change
-let prevFunnels: Funnel[] = [];
-useFunnelsStore.subscribe(() => {
-  const { funnels } = useFunnelsStore.getState();
-  if (funnels !== prevFunnels) {
-    prevFunnels = funnels;
-    saveFunnels(funnels);
+useFunnelsStore.subscribe((state, prevState) => {
+  if (state.funnels !== prevState.funnels) {
+    saveFunnels(state.funnels);
   }
 });
