@@ -1,6 +1,6 @@
 {
   "name": "nextjs-funnel-builder",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -12,6 +12,7 @@
     "@svgr/webpack": "^8.1.0",
     "classnames": "^2.5.1",
     "next": "16.1.6",
+    "next-auth": "^5.0.0-beta.30",
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "sass": "^1.97.3",

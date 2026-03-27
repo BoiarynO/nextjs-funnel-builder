@@ -1,0 +1,14 @@
+.authGroup {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.userLabel {
+  max-width: 180px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.9rem;
+  color: var(--color-primary-700);
+}

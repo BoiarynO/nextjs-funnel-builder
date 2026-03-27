@@ -2,6 +2,7 @@
 
 import { usePathname } from "next/navigation";
 
+import AuthControls from "@/components/layout/authControls/AuthControls";
 import Dropdown from "@/components/ui/dropdown/Dropdown";
 import LinkButton from "@/components/ui/linkButton/LinkButton";
 
@@ -31,6 +32,7 @@ export default function NavBar() {
           ))}
         </div>
       </Dropdown>
+      <AuthControls />
     </nav>
   );
 }

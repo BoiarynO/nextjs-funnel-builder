@@ -1,7 +1,7 @@
 import React from "react";
 
 import type { Step, TranslationKeyFormat } from "@/types/funnel";
-import { formatTranslationKey } from "@/utils/formatTranslationKey";
+import { formatTranslationKey } from "@/utils/formatting/formatTranslationKey";
 
 import styles from "./Details.module.css";
 

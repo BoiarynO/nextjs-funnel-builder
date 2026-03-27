@@ -1,4 +1,4 @@
-import Funnels from "@/views/funnels/Funnels";
+import Funnels from "@/components/views/funnels/Funnels";
 
 export default function FunnelsPage() {
   return <Funnels />;
