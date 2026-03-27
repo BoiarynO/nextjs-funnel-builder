@@ -78,3 +78,43 @@ Copy this block for each new feature:
 ### Follow-ups
 - On each feature/commit, append one new entry using the template above.
 - Keep architecture section in `agent-instructions.md` in sync when auth/backend work begins.
+
+## 2026-03-27 — Add Google auth foundation and extract auth controls
+
+### Context
+- Implemented Google authorization via Auth.js as an independent feature that does not change funnel access behavior.
+- Kept guest and logged-in users on the same localStorage persistence flow for funnels.
+
+### Decisions
+- Chose Auth.js route handlers in App Router (`app/api/auth/[...nextauth]/route.ts`) with centralized config in `auth.ts`.
+- Wrapped app tree with client `SessionProvider` through a dedicated provider component to keep server layout clean.
+- Extracted header auth UI/logic into a reusable layout-level component (`AuthControls`) to avoid duplicating `useSession/signIn/signOut`.
+- Kept/used `useIsLogged` as an example of a minimal derived auth-state hook for simple conditional rendering.
+
+### Implementation Notes
+- Files touched:
+  - `auth.ts`
+  - `app/api/auth/[...nextauth]/route.ts`
+  - `components/providers/AuthSessionProvider.tsx`
+  - `app/layout.tsx`
+  - `components/layout/authControls/AuthControls.tsx`
+  - `components/layout/authControls/AuthControls.module.css`
+  - `components/layout/header/navBar/NavBar.tsx`
+  - `README.md`
+  - `SYSTEM-DESIGN.md`
+- Important behavior changes:
+  - Google sign-in/sign-out is available in header.
+  - No route guards were added; funnel CRUD and persistence behavior remains unchanged.
+
+### Pitfalls / Gotchas
+- Missing or mismatched Google OAuth env values causes `ClientFetchError` / `invalid_client`.
+- Redirect URI in Google Console must exactly match the dev origin and callback path (`/api/auth/callback/google`).
+- During refactors, auth blocks can be duplicated accidentally; keep auth UI in one reusable component and import it where needed.
+
+### Verification
+- `npm run lint` and `npm run build` passed for auth integration changes.
+- Confirmed no auth checks were added inside `stores/funnelsStore.ts` and no middleware-based gating was introduced.
+
+### Follow-ups
+- If auth controls are needed in additional layout zones (sidebar/topbar/mobile), reuse `components/layout/authControls/AuthControls.tsx`.
+- If only boolean auth state is needed, prefer `hooks/useIsLogged.ts` over duplicating `useSession` parsing in multiple components.

@@ -33,6 +33,8 @@ Current architecture is local-first:
 - Prefer strict typing, avoid `any`.
 - Use function components and hooks.
 - Keep components small and composable.
+- If UI block contains auth/session behavior (`useSession`, `signIn`, `signOut`) and can appear in multiple places, extract it into a reusable layout component (for example `components/layout/authControls/AuthControls.tsx`), not inline in page/header files.
+- If component only needs boolean auth state, use a small derived hook pattern (for example `hooks/useIsLogged.ts`) instead of duplicating session parsing in many components.
 - Keep side effects in `useEffect` or dedicated data-layer components.
 - Prefer clear variable names over short abbreviations.
 - Write early-return logic for readability.

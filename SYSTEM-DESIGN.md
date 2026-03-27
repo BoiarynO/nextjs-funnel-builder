@@ -259,4 +259,24 @@ Naming: folder camelCase; component PascalCase; styles `ComponentName.module.css
 * Duplicate funnel
 * Preview funnel flow
 
+## 14. Google Auth and Backend-Ready Hooks
+
+Current behavior:
+
+* Google sign-in is optional and does not gate any routes.
+* Guests and signed-in users have identical access to funnel features.
+* Funnel persistence remains local-first (`localStorage`) for both user states.
+
+Auth layer:
+
+* **Auth config:** `auth.ts` (Auth.js with Google provider)
+* **Auth route:** `app/api/auth/[...nextauth]/route.ts`
+* **UI entry point:** `components/layout/header/navBar/NavBar.tsx`
+
+Planned backend migration hooks (next iteration):
+
+* **Outbound sync hook:** `stores/funnelsStore.ts` subscriber where `saveFunnels(state.funnels)` currently runs.
+* **Inbound hydration hook:** `components/views/funnels/dataLayer/FunnelsDataLayer.tsx` around `initialize()` call.
+* Suggested rollout: keep local writes as fallback first, then add remote sync in parallel, then switch source-of-truth when stable.
+
 ---

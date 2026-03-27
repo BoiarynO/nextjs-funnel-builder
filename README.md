@@ -37,6 +37,23 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000). Use "Go to My Funnels" to open the funnels view.
 
+## Google Auth Setup (optional, non-blocking)
+
+Google login is optional and does not gate access to funnels. Guests can keep creating funnels and data still persists in localStorage.
+
+1. Copy `.env.example` to `.env.local`.
+2. Create OAuth credentials in Google Cloud Console:
+   - OAuth consent screen: configure app name and test users.
+   - OAuth Client ID type: Web application.
+   - Authorized redirect URI (dev): `http://localhost:3000/api/auth/callback/google`
+3. Fill env vars in `.env.local`:
+   - `AUTH_SECRET`
+   - `AUTH_GOOGLE_ID`
+   - `AUTH_GOOGLE_SECRET`
+   - `NEXTAUTH_URL` (for local dev: `http://localhost:3000`)
+
+Without these variables, the app still works, but Google sign-in will not be available.
+
 ## Scripts
 
 | Script   | Description        |
