@@ -130,7 +130,7 @@ Copy this block for each new feature:
 ### Decisions
 - Single JSON document per user (`UserFunnelState.funnels` as `Funnel[]`) for minimal backend surface area on a pet project.
 - Identity key: `session.user.email` (unique in DB). Accept trade-off vs stable provider-agnostic user ids for now.
-- Orchestration in `FunnelsDataLayer` instead of a Zustand `subscribe` auto-save, so one code path can branch on `useSession`.
+- Orchestration in `FunnelsDataLayer` instead of a Zustand `subscribe` auto-save; it uses `useSession` for user identity and `isAuthLoading` from `appLoadingStore` (mirrors NextAuth via `SessionLoadingSync`) to gate hydration and persistence.
 - Debounced `PUT` (~350ms) after funnel list changes for signed-in users; immediate writes to `localStorage` for guests.
 - Prisma 7: use `@prisma/adapter-pg` + `pg` `Pool` because the generated client expects a driver adapter in this setup.
 
@@ -163,3 +163,39 @@ Copy this block for each new feature:
 - User-visible sync state and error/retry handling.
 - Optional: `updatedAt`/version for conflict detection; Zod validation on `PUT` body.
 - Consider `userId` from Auth.js adapter instead of email if multi-provider accounts matter.
+
+## 2026-03-31 — App loading store, LoadingOverlay, auth/funnel loading UX
+
+### Context
+- Needed clear separation between “session still resolving”, “funnels loading from server/local”, and snappy auth buttons without double-submit errors from repeated clicks.
+
+### Decisions
+- Introduced `stores/appLoadingStore.ts` with **`isAuthLoading`** and **`isFunnelsDataLoading`** instead of scattering `useSession().status` across funnel UI.
+- **`SessionLoadingSync`** (client, under `SessionProvider`) is the single place that maps NextAuth `status === "loading"` → `setAuthLoading`.
+- **`FunnelsDataLayer`** sets `isFunnelsDataLoading` true/false around hydrate; gates hydration and debounced save on **`isAuthLoading`** (not raw `status` in those checks).
+- **Create funnel** (`CreateFunnelForm`, sidebar button) depends only on **`isFunnelsDataLoading`**, not auth loading.
+- **`LoadingOverlay`** reusable UI: wraps children, semi-transparent overlay + “Loading”, optional `fullWidth`.
+- **`AuthControls`**: sign-in overlay driven by **local `isSignInPending`** set on click (immediate); **`isAuthLoading`** still disables sign-in until session is known. Sign-out gets the same pattern with **`isSignOutPending`**. Do not use `.finally()` to clear pending after `signIn`/`signOut` when `redirect: true` — NextAuth resolves after `window.location.href`, so the button would re-enable briefly before navigation.
+
+### Implementation Notes
+- Files touched (core):
+  - `stores/appLoadingStore.ts`
+  - `components/providers/SessionLoadingSync.tsx`
+  - `components/providers/AuthSessionProvider.tsx` (renders `SessionLoadingSync`)
+  - `components/ui/loadingOverlay/LoadingOverlay.tsx` + `.module.css`
+  - `components/layout/authControls/AuthControls.tsx`
+  - `components/views/funnels/dataLayer/FunnelsDataLayer.tsx`
+  - `components/layout/createFunnelForm/CreateFunnelForm.tsx`
+  - `components/layout/sidebarFunnels/SidebarFunnels.tsx`
+- Removed funnel-hydration booleans from `funnelsStore` in favor of `appLoadingStore`.
+
+### Pitfalls / Gotchas
+- OAuth `signIn`/`signOut` with default redirect: promise settles before the page unloads; reset pending only on **rejection** (`.catch`) for in-flight guard, or users can double-click.
+- `isFunnelsDataLoading` defaults true until `FunnelsDataLayer` finishes; only relevant on views that mount the data layer (e.g. funnels page).
+
+### Verification
+- `npx tsc --noEmit` on touched areas; lint clean on edited TS/TSX.
+
+### Follow-ups
+- Optional: move auth click-pending into `appLoadingStore` if other surfaces need the same “signing in/out” guard.
+- User-visible error when `signIn`/`signOut` rejects (toast or inline message).

@@ -1,3 +1,4 @@
+import { useAppLoadingStore } from "@/stores/appLoadingStore";
 import { useFunnelsStore } from "@/stores/funnelsStore";
 import { MAX_FUNNELS } from "@/utils/config/limits";
 import Heading from "@/components/ui/heading/Heading";
@@ -7,6 +8,7 @@ import styles from "./SidebarFunnels.module.css";
 import FunnelsList from "./funnelsList/FunnelsList";
 
 const SidebarFunnels = () => {
+  const isFunnelsDataLoading = useAppLoadingStore((s) => s.isFunnelsDataLoading);
   const canCreateFunnel = useFunnelsStore(
     (s) => s.funnels.length < MAX_FUNNELS
   );
@@ -23,7 +25,7 @@ const SidebarFunnels = () => {
       <Button
         type="button"
         onClick={startCreateFunnel}
-        disabled={!canCreateFunnel}
+        disabled={!canCreateFunnel || isFunnelsDataLoading}
       >
         Create funnel
       </Button>

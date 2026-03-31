@@ -3,6 +3,8 @@
 import type { ReactNode } from "react";
 import { SessionProvider } from "next-auth/react";
 
+import SessionLoadingSync from "./SessionLoadingSync";
+
 type AuthSessionProviderProps = {
   children: ReactNode;
 };
@@ -10,5 +12,10 @@ type AuthSessionProviderProps = {
 export default function AuthSessionProvider({
   children,
 }: AuthSessionProviderProps) {
-  return <SessionProvider>{children}</SessionProvider>;
+  return (
+    <SessionProvider>
+      <SessionLoadingSync />
+      {children}
+    </SessionProvider>
+  );
 }
