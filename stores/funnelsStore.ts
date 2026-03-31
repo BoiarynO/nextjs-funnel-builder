@@ -1,8 +1,11 @@
+/**
+ * In-memory funnel editor state. Persistence is external:
+ * FunnelsDataLayer calls `initialize` after load and writes storage when `funnels` changes.
+ */
 import { create } from "zustand";
 
 import type { Funnel, Step, TranslationKeyFormat } from "@/types/funnel";
 import { MAX_FUNNELS } from "@/utils/config/limits";
-import { loadFunnels, saveFunnels } from "@/utils/funnelsStorage";
 import { DEFAULT_COMPONENT_TYPES } from "@/utils/variables";
 import { ReorderItem } from "@/components/ui/reorderList/ReorderList";
 
@@ -33,7 +36,7 @@ type FunnelsState = {
 };
 
 type FunnelsActions = {
-  initialize: () => void;
+  initialize: (initialFunnels: Funnel[]) => void;
   selectFunnel: (funnel: Funnel) => void;
   startCreateFunnel: () => void;
   createFunnel: (newFunnel: Funnel) => void;
@@ -65,16 +68,22 @@ export const useFunnelsStore = create<FunnelsStore>((set) => ({
   draft: null,
   editingStepId: null,
 
-  /* initialize is used to load the funnels from the storage and select the first funnel as default */
-  initialize: () => {
-    const stored = loadFunnels();
-    if (stored.length > 0) {
+  /* Replace funnel list after async load (server GET or localStorage); picks first as selected. */
+  initialize: (initialFunnels: Funnel[]) => {
+    if (initialFunnels.length > 0) {
       set({
-        funnels: stored,
-        selectedFunnelId: stored[0].id,
+        funnels: initialFunnels,
+        selectedFunnelId: initialFunnels[0].id,
         ...resetDraftState,
       });
+      return;
     }
+
+    set({
+      funnels: [],
+      selectedFunnelId: null,
+      ...resetDraftState,
+    });
   },
 
   /* selectFunnel is used to select a funnel from the list, view the funnel editor and reset the create funnel mode */
@@ -94,10 +103,9 @@ export const useFunnelsStore = create<FunnelsStore>((set) => ({
     });
   },
 
-  /* 
-  createFunnel is used to create a new funnel and select it.
-  input is a whole new funnel object with all the properties
-  it also resets the create funnel mode 
+  /*
+  Append a funnel and select it. Does not touch network or localStorage;
+  subscribers in FunnelsDataLayer persist the new `funnels` snapshot.
   */
   createFunnel: (newFunnel: Funnel) => {
     set((state) => ({
@@ -277,17 +285,6 @@ export const useFunnelsStore = create<FunnelsStore>((set) => ({
     });
   },
 }));
-
-/* 
-subscribe is used to save the funnels to the storage whenever the funnels state changes
-it is a subscriber that runs whenever the funnels state changes
-it saves the funnels to the storage
-*/
-useFunnelsStore.subscribe((state, prevState) => {
-  if (state.funnels !== prevState.funnels) {
-    saveFunnels(state.funnels);
-  }
-});
 
 /* Selectors for funnel editor derived state */
 export const selectSelectedFunnel = (s: FunnelsStore) =>

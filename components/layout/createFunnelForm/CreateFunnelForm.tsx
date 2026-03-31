@@ -1,3 +1,7 @@
+/**
+ * Create funnel UI: builds a new Funnel object and pushes it into Zustand.
+ * Actual persistence (localStorage vs /api/funnels) happens in FunnelsDataLayer after `funnels` updates.
+ */
 import { useEffect, useRef, useState } from "react";
 
 import type { Funnel } from "@/types/funnel";
@@ -37,6 +41,7 @@ const CreateFunnelForm = () => {
       return;
     }
 
+    // Domain object: same shape the server stores inside JSON (see types/funnel + API route).
     const newFunnel: Funnel = {
       id: crypto.randomUUID(),
       name: name.trim(),
@@ -45,6 +50,7 @@ const CreateFunnelForm = () => {
       steps: [],
     };
 
+    // In-memory only here; FunnelsDataLayer will persist the updated `funnels` array.
     createFunnel(newFunnel);
     setName("");
     setError(null);
