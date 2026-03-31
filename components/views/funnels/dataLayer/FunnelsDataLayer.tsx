@@ -7,6 +7,7 @@
 import { useEffect, useRef } from "react";
 import { useSession } from "next-auth/react";
 
+import { useAppLoadingStore } from "@/stores/appLoadingStore";
 import { useFunnelsStore } from "@/stores/funnelsStore";
 import {
   loadFunnelsFromLocalStorage,
@@ -15,7 +16,11 @@ import {
 import { loadFunnelsFromServer, saveFunnelsToServer } from "@/utils/funnelsApi";
 
 const FunnelsDataLayer = () => {
-  const { data: session, status } = useSession();
+  const { data: session } = useSession();
+  const isAuthLoading = useAppLoadingStore((s) => s.isAuthLoading);
+  const setFunnelsDataLoading = useAppLoadingStore(
+    (s) => s.setFunnelsDataLoading
+  );
   const initialize = useFunnelsStore((state) => state.initialize);
   const funnels = useFunnelsStore((state) => state.funnels);
   // Gate the save effect until initial load finished (avoid PUT with stale []).
@@ -23,12 +28,14 @@ const FunnelsDataLayer = () => {
 
   // --- Hydration: run when session is known (not "loading") ---
   useEffect(() => {
-    if (status === "loading") {
+    if (isAuthLoading) {
       return;
     }
 
     let isCancelled = false;
     const isAuthorized = Boolean(session?.user?.email);
+
+    setFunnelsDataLoading(true);
 
     async function hydrateStore() {
       if (isAuthorized) {
@@ -62,16 +69,24 @@ const FunnelsDataLayer = () => {
       isHydratedRef.current = true;
     }
 
-    void hydrateStore();
+    void (async () => {
+      try {
+        await hydrateStore();
+      } finally {
+        if (!isCancelled) {
+          setFunnelsDataLoading(false);
+        }
+      }
+    })();
 
     return () => {
       isCancelled = true;
     };
-  }, [initialize, session?.user?.email, status]);
+  }, [initialize, isAuthLoading, session?.user?.email, setFunnelsDataLoading]);
 
   // --- Persistence: react to any change of the funnel list in Zustand ---
   useEffect(() => {
-    if (!isHydratedRef.current || status === "loading") {
+    if (!isHydratedRef.current || isAuthLoading) {
       return;
     }
 
@@ -89,7 +104,7 @@ const FunnelsDataLayer = () => {
     return () => {
       window.clearTimeout(timerId);
     };
-  }, [funnels, session?.user?.email, status]);
+  }, [funnels, isAuthLoading, session?.user?.email]);
 
   return null;
 };

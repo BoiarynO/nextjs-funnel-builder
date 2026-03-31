@@ -19,12 +19,15 @@ Stack touchpoints:
 
 - UI: Next.js App Router + React;
 - state: Zustand (`stores/funnelsStore.ts`) — domain list + selection + draft editing; **no** `subscribe`-based persistence inside the store;
-- hydration and persistence orchestration: `components/views/funnels/dataLayer/FunnelsDataLayer.tsx` (session-aware);
+- loading flags: Zustand `stores/appLoadingStore.ts` — `isAuthLoading` (NextAuth session resolution) and `isFunnelsDataLoading` (funnel list hydrate from API or `localStorage`); UI reads these instead of repeating `useSession().status` for funnel/create flows;
+- session→store sync: `components/providers/SessionLoadingSync.tsx` (must render under `SessionProvider` in `AuthSessionProvider`);
+- hydration and persistence orchestration: `components/views/funnels/dataLayer/FunnelsDataLayer.tsx` (waits for `isAuthLoading`, toggles `isFunnelsDataLoading` around hydrate/save gating);
 - server: `app/api/funnels/route.ts`, `lib/prisma.ts`, `prisma/schema.prisma`.
 
 ## 2. Architecture and Technical Decisions
 
 - Keep business state centralized in Zustand, not duplicated in many local component states.
+- Keep **loading booleans** for auth resolution and funnel data fetch in `appLoadingStore`; funnel UI (create funnel button/form) should depend on `isFunnelsDataLoading`, not ad-hoc `useSession` status checks.
 - Keep components mostly presentational; move orchestration/data synchronization logic to data-layer components and store actions.
 - Persist only domain data (`funnels`) and derive UI state (`selectedFunnelId`, `isCreatingFunnel`) in the store.
 - **Do not** reintroduce automatic persistence inside `funnelsStore` unless deliberately redesigning; the data layer owns when to write to `localStorage` vs server.
@@ -53,7 +56,8 @@ Stack touchpoints:
 - Use function components and hooks.
 - Keep components small and composable.
 - If UI block contains auth/session behavior (`useSession`, `signIn`, `signOut`) and can appear in multiple places, extract it into a reusable layout component (for example `components/layout/authControls/AuthControls.tsx`), not inline in page/header files.
-- If component only needs boolean auth state, use a small derived hook pattern (for example `hooks/useIsLogged.ts`) instead of duplicating session parsing in many components.
+- **Auth button loading:** use **local state** set synchronously on click for sign-in/sign-out pending (overlay + `disabled`), so the UI does not wait for NextAuth’s async `status`. Clear pending only in `.catch()` for OAuth redirect flows: with default `redirect: true`, `signIn` / `signOut` resolve the promise after assigning `window.location.href`, so `.finally()` would drop loading too early and allow double-clicks before navigation.
+- If component only needs boolean “is logged in”, use a small derived hook (`hooks/useIsLogged.ts`) instead of duplicating `session?.user` checks; for **loading** indicators shared app-wide, prefer `appLoadingStore` + `SessionLoadingSync` over spreading `useSession().status`.
 - Keep side effects in `useEffect` or dedicated data-layer components.
 - Prefer clear variable names over short abbreviations.
 - Write early-return logic for readability.
@@ -123,5 +127,6 @@ Likely next steps already visible in project notes:
 This document should stay updated when:
 
 - auth or persistence behavior changes;
+- global loading or session-sync behavior changes (`appLoadingStore`, `SessionLoadingSync`, `FunnelsDataLayer` gates);
 - new API routes or env vars are introduced;
 - server/client boundaries shift (middleware, RSC data loading, etc.).

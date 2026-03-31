@@ -7,9 +7,11 @@ import { useEffect, useRef, useState } from "react";
 import type { Funnel } from "@/types/funnel";
 import { DEFAULT_COMPONENT_TYPES } from "@/utils/variables";
 import { MAX_FUNNELS } from "@/utils/config/limits";
+import { useAppLoadingStore } from "@/stores/appLoadingStore";
 import { useFunnelsStore } from "@/stores/funnelsStore";
 import Button from "@/components/ui/button/Button";
 import Input from "@/components/ui/input/Input";
+import LoadingOverlay from "@/components/ui/loadingOverlay/LoadingOverlay";
 
 import styles from "./CreateFunnelForm.module.css";
 
@@ -18,8 +20,11 @@ const CreateFunnelForm = () => {
   const [error, setError] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
+  const isFunnelsDataLoading = useAppLoadingStore((s) => s.isFunnelsDataLoading);
   const funnels = useFunnelsStore((s) => s.funnels);
   const createFunnel = useFunnelsStore((s) => s.createFunnel);
+
+  const isCreateBlocked = isFunnelsDataLoading;
 
   useEffect(() => {
     if (inputRef.current) {
@@ -32,7 +37,7 @@ const CreateFunnelForm = () => {
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
 
-    if (limitReached) {
+    if (limitReached || isCreateBlocked) {
       return;
     }
 
@@ -57,31 +62,35 @@ const CreateFunnelForm = () => {
   };
 
   return (
-    <form className={styles.container} onSubmit={handleSubmit}>
-      <h1 className={styles.title}>Create funnel</h1>
-      <div className={styles.field}>
-        <label htmlFor="funnel-name" className={styles.label}>
-          Funnel name
-        </label>
-        <Input
-          ref={inputRef}
-          id="funnel-name"
-          placeholder="Enter funnel name"
-          value={name}
-          onChange={(event) => setName(event.target.value)}
-          disabled={limitReached}
-        />
-      </div>
-      <div className={styles.actions}>
-        <Button type="submit" disabled={limitReached}>
-          Create
-        </Button>
-        {limitReached && (
-          <p className={styles.helperText}>Maximum funnels limit reached</p>
-        )}
-        {error && !limitReached && <p className={styles.helperText}>{error}</p>}
-      </div>
-    </form>
+    <LoadingOverlay loading={isCreateBlocked} fullWidth className={styles.loadingWrap}>
+      <form className={styles.container} onSubmit={handleSubmit}>
+        <h1 className={styles.title}>Create funnel</h1>
+        <div className={styles.field}>
+          <label htmlFor="funnel-name" className={styles.label}>
+            Funnel name
+          </label>
+          <Input
+            ref={inputRef}
+            id="funnel-name"
+            placeholder="Enter funnel name"
+            value={name}
+            onChange={(event) => setName(event.target.value)}
+            disabled={limitReached || isCreateBlocked}
+          />
+        </div>
+        <div className={styles.actions}>
+          <Button type="submit" disabled={limitReached || isCreateBlocked}>
+            Create
+          </Button>
+          {limitReached && (
+            <p className={styles.helperText}>Maximum funnels limit reached</p>
+          )}
+          {error && !limitReached && (
+            <p className={styles.helperText}>{error}</p>
+          )}
+        </div>
+      </form>
+    </LoadingOverlay>
   );
 };
 
