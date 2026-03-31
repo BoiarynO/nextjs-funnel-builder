@@ -1,0 +1,23 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client-js"
+  engineType = "binary"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// One row per signed-in user (keyed by email from the session).
+// `funnels` stores the same Funnel[] JSON the client keeps in localStorage for guests.
+model UserFunnelState {
+  id        String   @id @default(cuid())
+  userEmail String   @unique
+  funnels   Json
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

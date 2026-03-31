@@ -2,7 +2,7 @@
 
 ## 1. Project Purpose
 
-This project is a frontend-only Funnel Builder for managers.
+This project is a Funnel Builder for managers (Next.js App Router).
 Main user goals:
 
 - create and manage funnels;
@@ -10,21 +10,40 @@ Main user goals:
 - configure translation key format and component types;
 - export selected funnel as JSON.
 
-Current architecture is local-first:
+Persistence is **hybrid** (guest vs signed-in):
+
+- **Guests (no session):** `localStorage` only (`utils/funnelsStorage.ts`).
+- **Signed-in users (Google via Auth.js):** funnels load/save through **`GET` / `PUT` `/api/funnels`**, stored in Postgres via Prisma (`UserFunnelState`, JSON column for the `Funnel[]` payload).
+
+Stack touchpoints:
 
 - UI: Next.js App Router + React;
-- state: Zustand store (`stores/funnelsStore.ts`);
-- persistence: `localStorage` via `utils/funnelsStorage.ts`;
-- no backend in current stable flow.
+- state: Zustand (`stores/funnelsStore.ts`) — domain list + selection + draft editing; **no** `subscribe`-based persistence inside the store;
+- hydration and persistence orchestration: `components/views/funnels/dataLayer/FunnelsDataLayer.tsx` (session-aware);
+- server: `app/api/funnels/route.ts`, `lib/prisma.ts`, `prisma/schema.prisma`.
 
 ## 2. Architecture and Technical Decisions
 
 - Keep business state centralized in Zustand, not duplicated in many local component states.
 - Keep components mostly presentational; move orchestration/data synchronization logic to data-layer components and store actions.
 - Persist only domain data (`funnels`) and derive UI state (`selectedFunnelId`, `isCreatingFunnel`) in the store.
+- **Do not** reintroduce automatic persistence inside `funnelsStore` unless deliberately redesigning; the data layer owns when to write to `localStorage` vs server.
 - Favor explicit types for domain entities (`types/funnel.ts`).
 - Keep limits/config values in dedicated config files (`utils/config/limits.ts`), avoid magic numbers in components.
 - Keep formatting logic and pure transformations in `utils` (for example key formatters).
+
+### Auth and API boundaries
+
+- Use `auth()` from `auth.ts` in Route Handlers to resolve the current user; unauthenticated requests to `/api/funnels` return **401**.
+- Client fetches for funnels: `utils/funnelsApi.ts` (`loadFunnelsFromServer`, `saveFunnelsToServer`).
+- Prisma 7 in this repo uses `@prisma/adapter-pg` + `pg` (`lib/prisma.ts`); **`DATABASE_URL` is required** for server routes that touch the DB.
+- First successful server load with an **empty** server document: guest `localStorage` data is migrated up (then saved via `PUT`).
+
+### Known intentional limitations (pet-project scope)
+
+- Last-write-wins across tabs/devices; no optimistic locking or conflict UI.
+- Server validates payload shape lightly (array check only); full `Funnel` schema validation is not enforced on the API yet.
+- Silent failure risk on `PUT` from the client (no user-visible sync status); improve if reliability becomes a priority.
 
 ## 3. Code Style and Conventions
 
@@ -98,11 +117,11 @@ Recommended placement:
 Likely next steps already visible in project notes:
 
 - style/details refactor with UI library;
-- authorization start;
-- backend storage for authorized users.
+- optional: sync UX (saving indicator, retries, conflict/version handling);
+- optional: stricter API validation (e.g. Zod) and stable user id beyond email.
 
-When these start, this document should be updated to include:
+This document should stay updated when:
 
-- auth flow ownership boundaries;
-- API integration and error-handling rules;
-- server/client separation constraints.
+- auth or persistence behavior changes;
+- new API routes or env vars are introduced;
+- server/client boundaries shift (middleware, RSC data loading, etc.).

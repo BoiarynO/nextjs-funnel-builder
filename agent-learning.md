@@ -118,3 +118,48 @@ Copy this block for each new feature:
 ### Follow-ups
 - If auth controls are needed in additional layout zones (sidebar/topbar/mobile), reuse `components/layout/authControls/AuthControls.tsx`.
 - If only boolean auth state is needed, prefer `hooks/useIsLogged.ts` over duplicating `useSession` parsing in multiple components.
+
+### Update (2026-03-31)
+- Funnel persistence for **signed-in** users was later moved to the server (`/api/funnels` + Prisma/Postgres). Guests still use **localStorage** only. See entry below.
+
+## 2026-03-31 — Server-side funnel persistence (auth vs guest)
+
+### Context
+- Needed cross-device continuity for logged-in users while keeping guest UX unchanged (local-first in the browser).
+
+### Decisions
+- Single JSON document per user (`UserFunnelState.funnels` as `Funnel[]`) for minimal backend surface area on a pet project.
+- Identity key: `session.user.email` (unique in DB). Accept trade-off vs stable provider-agnostic user ids for now.
+- Orchestration in `FunnelsDataLayer` instead of a Zustand `subscribe` auto-save, so one code path can branch on `useSession`.
+- Debounced `PUT` (~350ms) after funnel list changes for signed-in users; immediate writes to `localStorage` for guests.
+- Prisma 7: use `@prisma/adapter-pg` + `pg` `Pool` because the generated client expects a driver adapter in this setup.
+
+### Implementation Notes
+- Files touched (core):
+  - `prisma/schema.prisma`, `prisma/migrations/` (UserFunnelState)
+  - `lib/prisma.ts`
+  - `app/api/funnels/route.ts` (`GET`, `PUT`)
+  - `utils/funnelsApi.ts`
+  - `utils/funnelsStorage.ts` (explicit `*FromLocalStorage` names + legacy aliases)
+  - `stores/funnelsStore.ts` (`initialize(initialFunnels)`, removed persistence subscribe)
+  - `components/views/funnels/dataLayer/FunnelsDataLayer.tsx`
+  - `package.json` / `package-lock.json` (`@prisma/adapter-pg`, `pg`)
+- Important behavior changes:
+  - Signed-in: hydrate from server; if server empty, seed from `localStorage` and upload once.
+  - On server load failure while signed in, fallback to `localStorage` for UX; be aware this can theoretically overwrite server state on later successful save (known pet-project risk).
+
+### Pitfalls / Gotchas
+- `DATABASE_URL` must be set wherever the API runs (local + hosting secrets).
+- Neon: prefer pooled connection string for serverless-style deployments when applicable.
+- Concurrent edits: last write wins; no version column or merge strategy yet.
+- Do not re-add store-level `subscribe` persistence without revisiting the guest/server split.
+
+### Verification
+- `npm run lint` (no new errors in touched files).
+- `npm run build` succeeded after Prisma adapter wiring.
+- `npx prisma migrate dev` applied against Neon for the new table (environment-specific).
+
+### Follow-ups
+- User-visible sync state and error/retry handling.
+- Optional: `updatedAt`/version for conflict detection; Zod validation on `PUT` body.
+- Consider `userId` from Auth.js adapter instead of email if multi-provider accounts matter.

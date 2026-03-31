@@ -1,8 +1,13 @@
+/**
+ * Guest persistence: entire funnel list as one JSON string in localStorage.
+ * Signed-in users use the server instead (see FunnelsDataLayer + funnelsApi).
+ */
 import type { Funnel } from "@/types/funnel";
 
 const STORAGE_KEY = "funnels_storage_v1";
 
-export function loadFunnels(): Funnel[] {
+/** Read persisted funnels for guests; returns [] on SSR, corrupt JSON, or missing key. */
+export function loadFunnelsFromLocalStorage(): Funnel[] {
   if (typeof window === "undefined") {
     return [];
   }
@@ -24,16 +29,19 @@ export function loadFunnels(): Funnel[] {
   }
 }
 
-export function saveFunnels(funnels: Funnel[]): void {
-  console.log("saving funnels to storage", funnels);
+/** Write-through for guests whenever the Zustand `funnels` array changes. */
+export function saveFunnelsToLocalStorage(funnels: Funnel[]): void {
   if (typeof window === "undefined") {
     return;
   }
 
   try {
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify(funnels));
-    console.log("saved funnels to storage");
   } catch {
-    // Ignore write errors for now
+    // Quota exceeded or private mode; fail silently for now.
   }
 }
+
+// Backward-compatible aliases for existing imports.
+export const loadFunnels = loadFunnelsFromLocalStorage;
+export const saveFunnels = saveFunnelsToLocalStorage;
